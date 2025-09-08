@@ -129,8 +129,8 @@ void setup()
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LED_OFF);
 
-  pinMode(14, OUTPUT);
-  digitalWrite(14, RELAY_OPEN);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, RELAY_OPEN);
 
   button.begin(BUTTON_PIN, INPUT);
   button.setClickHandler(buttonReleasedHandler);

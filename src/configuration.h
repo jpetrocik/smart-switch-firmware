@@ -3,13 +3,12 @@
 
 #include <Arduino.h>
 
-#define CLIENT_ID "garage-door-%i"
+#define CLIENT_ID "switch-%i"
 
 // #define SONOFF_BASIC
 // #define KMC_SMART_PLUG
 // #define SONOFF_DUAL_R2
-// #define KS602S_SWITCH
-#define GARAGE
+#define KS602S_SWITCH
 
 #ifdef SONOFF_BASIC
 #define RELAY_PIN 12
@@ -42,12 +41,6 @@
 #define BUTTON_PIN 0
 #endif
 
-#ifdef GARAGE
-#define RELAY_PIN 12
-#define LED_PIN 2
-#define BUTTON_PIN 0
-#endif
-
 #ifdef LED_INVERTED
   #define LED_ON 0
   #define LED_OFF 1
@@ -63,10 +56,10 @@
 
 struct DeviceConfig
 {
-  char deviceName[20] = "door";
-  char roomName[20] = "garage";
+  char deviceName[20] = "name";
+  char roomName[20] = "room";
   char locationName[20] = "house";
-  char hostname[41] = "garage-door";
+  char hostname[41] = "room-name";
   char mqttHost[50];
   char wifiSsid[25];
   char wifiPassword[50];
