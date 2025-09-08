@@ -114,7 +114,7 @@ void setup()
 {
   Serial.begin(115200);
 
-  Serial.println("GarageController Firmware");
+  Serial.println("Switch Firmware");
   Serial.print("Build date: ");
   Serial.println(__DATE__ " " __TIME__);
 
