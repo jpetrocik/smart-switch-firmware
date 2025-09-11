@@ -9,4 +9,8 @@
 .vscode/settings.json
 .vscode/.browse.c_cpp.db
 
+#required internal library
 lib/wifi-manager
+
+#ignore patch files
+*.patch

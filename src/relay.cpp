@@ -4,7 +4,9 @@
 
 void operateDoor(RELAY_STATE state)
 {
-    digitalWrite(RELAY_PIN, state);
+    digitalWrite(14, RELAY_CLOSED);
+    delay(1000);
+    digitalWrite(14, RELAY_OPEN);
 }
 
 void toogleRelay()
