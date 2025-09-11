@@ -1,7 +1,12 @@
+#include "configuration.h"
+#ifdef OTA_ENABLED
+#include <Arduino.h>
+#include <ArduinoOTA.h>
+
 /******************************************
  * Arduino OTA
  ******************************************/
-void otaSetup() { 
+void otaSetup(const char* hostname) { 
   Serial.println("Enabling OTA Updates");
 
   // Port defaults to 8266
@@ -13,12 +18,12 @@ void otaSetup() {
   // ArduinoOTA.setPassword((const char *)"123");
 
   ArduinoOTA.onStart([]() {
-    ticker.attach(0.6, tick);
+    // ticker.attach(0.6, tick);
     Serial.println("OTA Update Start....");
   });
   ArduinoOTA.onEnd([]() {
-    ticker.attach(0.2, tick);
-    Serial.println("\nOTA Update Finished");
+    // ticker.attach(0.2, tick);
+    Serial.println("OTA Update Finished");
   });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
@@ -37,4 +42,4 @@ void otaSetup() {
 void otaLoop() {
   ArduinoOTA.handle();
 }
-
+#endif
