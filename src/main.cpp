@@ -129,9 +129,6 @@ void setup()
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LED_OFF);
 
-  pinMode(RELAY_PIN, OUTPUT);
-  digitalWrite(RELAY_PIN, RELAY_OPEN);
-
   button.begin(BUTTON_PIN, INPUT);
   button.setClickHandler(buttonReleasedHandler);
   button.setLongClickTime(2000);
@@ -139,8 +136,8 @@ void setup()
   button.setLongClickDetectedHandler(longPressButtonHandler);
   button.setLongClickHandler(longReleaseButtonHandler);
 
-  relay.begin(RELAY_PIN);
-  relay.setDebounceTime(500);
+  //TODO activeLow variable should be controlled by configuration.h
+  relay.begin(RELAY_PIN, OUTPUT, true);
   relay.setChangedHandler(handlerRelayStateChange);
 
   sprintf(apSsid, CLIENT_ID, ESP.getChipId());

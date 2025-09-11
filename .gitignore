@@ -9,4 +9,4 @@
 .vscode/settings.json
 .vscode/.browse.c_cpp.db
 
-lib/wifimanager
+lib/wifi-manager
