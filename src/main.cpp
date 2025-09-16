@@ -21,7 +21,7 @@ DeviceConfig deviceConfig;
 
 char apSsid[sizeof(CLIENT_ID) + 10];
 
-void sendCurrentStatus(boolean changed);
+void sendCurrentStatus(bool changed);
 void tick();
 void configSave();
 void configLoad();
@@ -79,7 +79,10 @@ void longReleaseButtonHandler(Button2 &btn)
 void handlerRelayStateChange(Button2 &btn)
 {
   sendCurrentStatus(true);
-  digitalWrite(LED_PIN, btn.isPressed() ? LED_ON : LED_OFF);
+  if (!deviceConfig.disableLed)
+  {
+    digitalWrite(LED_PIN, btn.isPressed() ? LED_ON : LED_OFF);
+  }
 }
 
 void wifiEventHandler(WIFI_MANAGER_EVENTS event)
@@ -137,7 +140,7 @@ void setup()
   button.setLongClickDetectedHandler(longPressButtonHandler);
   button.setLongClickHandler(longReleaseButtonHandler);
 
-  //TODO activeLow variable should be controlled by configuration.h
+  // TODO activeLow variable should be controlled by configuration.h
   relay.begin(RELAY_PIN, OUTPUT, false);
   relay.setChangedHandler(handlerRelayStateChange);
 
@@ -156,7 +159,6 @@ void setup()
 #ifdef WEBSERVER_ENABLED
   webServerSetup(&deviceConfig);
 #endif
-
 }
 
 void loop()
@@ -190,7 +192,7 @@ void loop()
 #endif
 }
 
-void sendCurrentStatus(boolean hasChanged)
+void sendCurrentStatus(bool hasChanged)
 {
 #ifdef MQTT_ENABLED
   mqttSendStatus(hasChanged);
@@ -225,6 +227,7 @@ void configSave()
   jsonDoc["mqttHost"] = deviceConfig.mqttHost;
   jsonDoc["wifiSsid"] = deviceConfig.wifiSsid;
   jsonDoc["wifiPassword"] = deviceConfig.wifiPassword;
+  jsonDoc["disableLed"] = deviceConfig.disableLed;
 
   sprintf(deviceConfig.hostname, "%s-%s", deviceConfig.roomName, deviceConfig.deviceName);
 
@@ -304,6 +307,15 @@ void configLoad()
         else
         {
           deviceConfig.wifiPassword[0] = 0;
+        }
+
+        if (((JsonVariant)jsonDoc["disableLed"]).is<bool>())
+        {
+          deviceConfig.disableLed = jsonDoc["disableLed"];
+        }
+        else
+        {
+          deviceConfig.disableLed = false;
         }
       }
     }

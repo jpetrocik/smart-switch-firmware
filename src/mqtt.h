@@ -6,6 +6,6 @@
 
 void mqttSetup(DeviceConfig *deviceConfig);
 void mqttLoop();
-void mqttSendStatus(boolean hasChanged);
+void mqttSendStatus(bool hasChanged);
 #endif
 #endif

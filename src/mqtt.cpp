@@ -23,7 +23,7 @@ unsigned long lastStatePublishCounter = 0;
 
 void mqttCallback(char *topic, byte *payload, unsigned int length);
 void mqttConnect();
-void mqttSendStatus(boolean hasChanged);
+void mqttSendStatus(bool hasChanged);
 
 void mqttSetup(DeviceConfig *deviceConfig)
 {
@@ -126,7 +126,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   }
 }
 
-void mqttSendStatus(boolean hasChanged)
+void mqttSendStatus(bool hasChanged)
 {
   RELAY_STATE currentRelayState = (RELAY_STATE)relayState();
 

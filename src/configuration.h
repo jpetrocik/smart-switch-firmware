@@ -63,7 +63,8 @@ struct DeviceConfig
   char mqttHost[50];
   char wifiSsid[25];
   char wifiPassword[50];
-  boolean dirty = false;
+  bool disableLed = false;
+  bool dirty = false;
   void (*startTicker)(float seconds);
   void (*stopTicker)();
 };

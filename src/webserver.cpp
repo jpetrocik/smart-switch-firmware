@@ -102,6 +102,10 @@ void handleSaveConfigureDevice()
     {
       argValue.toCharArray(webserver_deviceConfig->wifiPassword, 50);
     }
+    else if (argName == "disableLed")
+    {
+      webserver_deviceConfig->disableLed = argValue == "true";
+    }
   }
 
   webserver_deviceConfig->dirty = true;
