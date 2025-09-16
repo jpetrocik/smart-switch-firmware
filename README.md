@@ -18,11 +18,20 @@ Check configuration.h file to see if your device is supported and uncomment the 
 
 Once you have flashed the device, the device will go into AP mode which you can connect to with you computer.  Looks for `switch-[chipid] WiFi SSID.
 
-To configure the device for you next network use the following curl comment and replace the [] with the appropriate values. The [NAME] is the name you refer to the device as, e.g. desk-lamp, and [ROOM] is the name for the room the device is located in, e.g. office. The mqttHost is optional if you do not have a mqtt server running.
+To configure the device for your network use the following curl comment and query parameters. 
 
 ```
-curl -X PUT "http://192.168.1.1/config?ssid=[SSID]&password=[PASSWORD]&device=[NAME]&room=[ROOM]&mqttHost=[MQTT.HOST]"
+curl -X PUT "http://192.168.1.1/config"
 ```
+
+### Query Parameters
+ssid = wifi name
+password = wifi password
+location = The location of the device, default house
+room = The room the device is in, default room
+device = The name of the device, default light
+mqttHost = Hostname of the mqtt broker
+disableLed = Disable the LED when device is on
 
 Once you run the command the device will restart and connect to your network.
 
@@ -44,13 +53,13 @@ curl "http://[IP.ADDRESS]/"
 Turn light on
 
 ```
-curl "http://[IP.ADDRESS]/on"
+curl "http://[IP.ADDRESS]/relay/closed"
 ```
 
 Turn light off
 
 ```
-curl "http://[IP.ADDRESS]/off"
+curl "http://[IP.ADDRESS]/relay/open"
 ```
 
 Turn toggle light
