@@ -24,7 +24,8 @@ To configure the device for your network use the following curl comment and quer
 curl -X PUT "http://192.168.1.1/config"
 ```
 
-### Query Parameters
+| Query Parameter  | Decriptions |
+| --- | --- |
 | ssid | wifi name |
 | password | wifi password |
 | location | The location of the device, default house |
