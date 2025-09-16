@@ -64,7 +64,7 @@ void mqttLoop()
     // Publish state every 5 minutes
     if (millis() > 5 * 60 * 1000 * lastStatePublishCounter)
     {
-      sprintf(_jsonStatusBuffer, "{\"chipId\":%i, \"ipAddress\":\"%s\"}", ESP.getChipId(), WiFi.localIP().toString().c_str());
+      sprintf(_jsonStatusBuffer, "{\"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}", ESP.getChipId(), WiFi.localIP().toString().c_str(), WiFi.RSSI());
       _mqClient.publish(_stateTopic, _jsonStatusBuffer);
       lastStatePublishCounter++;
     }
