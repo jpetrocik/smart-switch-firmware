@@ -8,14 +8,13 @@
 #define SONOFF_BASIC
 // #define KMC_SMART_PLUG
 // #define SONOFF_DUAL_R2
-//#define KS602S_SWITCH
+// #define KS602S_SWITCH
 
 #ifdef SONOFF_BASIC
 #define RELAY_PIN 12
 #define LED_PIN 13
 #define BUTTON_PIN 0
 #define LED_INVERTED
-#define RELAY_INVERTED
 #endif
 
 #ifdef KMC_SMART_PLUG

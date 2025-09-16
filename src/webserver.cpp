@@ -115,8 +115,8 @@ void webServerSetup(DeviceConfig *deviceConfig)
 
   Serial.println("Starting web server on port 80");
   server.on("/", handleStatus);
-  server.on("/open", handleCloseRelay);
-  server.on("/close", handleOpenRelay);
+  server.on("/relay/close", handleCloseRelay);
+  server.on("/relay/open", handleOpenRelay);
   server.on("/restart", HTTP_POST, handleRestart);
   server.on("/config", HTTP_GET, handleConfigureDevice);
   server.on("/config", HTTP_PUT, handleSaveConfigureDevice);

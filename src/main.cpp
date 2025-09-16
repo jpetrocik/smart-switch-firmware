@@ -1,5 +1,4 @@
 #include <FS.h>
-
 #include <Ticker.h>
 #include <ArduinoJson.h>
 #include <Button2.h>
@@ -80,7 +79,7 @@ void longReleaseButtonHandler(Button2 &btn)
 void handlerRelayStateChange(Button2 &btn)
 {
   sendCurrentStatus(true);
-  digitalWrite(LED_PIN, btn.isPressed() ? LED_OFF : LED_ON);
+  digitalWrite(LED_PIN, btn.isPressed() ? LED_ON : LED_OFF);
 }
 
 void wifiEventHandler(WIFI_MANAGER_EVENTS event)
@@ -93,8 +92,10 @@ void wifiEventHandler(WIFI_MANAGER_EVENTS event)
     break;
   case STATION_CONNECTED:
     Serial.println("Connected to WiFi");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
     ticker.detach();
-    digitalWrite(2, HIGH);
+    digitalWrite(LED_PIN, LED_OFF);
 #ifdef MDNS_ENABLED
     mdnsSetup(deviceConfig.hostname);
 #endif
@@ -137,7 +138,7 @@ void setup()
   button.setLongClickHandler(longReleaseButtonHandler);
 
   //TODO activeLow variable should be controlled by configuration.h
-  relay.begin(RELAY_PIN, OUTPUT, true);
+  relay.begin(RELAY_PIN, OUTPUT, false);
   relay.setChangedHandler(handlerRelayStateChange);
 
   sprintf(apSsid, CLIENT_ID, ESP.getChipId());
@@ -156,7 +157,6 @@ void setup()
   webServerSetup(&deviceConfig);
 #endif
 
-  digitalWrite(LED_PIN, LED_OFF);
 }
 
 void loop()
