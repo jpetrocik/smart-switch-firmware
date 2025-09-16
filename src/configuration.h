@@ -56,10 +56,10 @@
 
 struct DeviceConfig
 {
-  char deviceName[20] = "name";
+  char deviceName[20] = "light";
   char roomName[20] = "room";
   char locationName[20] = "house";
-  char hostname[41] = "room-name";
+  char hostname[41] = "room-light";
   char mqttHost[50];
   char wifiSsid[25];
   char wifiPassword[50];

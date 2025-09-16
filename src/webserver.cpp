@@ -51,20 +51,13 @@ void handleConfigureDevice()
     if (configFile)
     {
       size_t size = configFile.size();
-      std::unique_ptr<char[]> buf(new char[size]);
+      std::unique_ptr<char[]> buf(new char[size+1]);
 
       configFile.readBytes(buf.get(), size);
-
-      JsonDocument json;
-      DeserializationError error = deserializeJson(json, buf.get());
-
-      if (!error)
-      {
-        String result;
-        serializeJsonPretty(json, webserver_jsonStatusBuffer);
-        server.send(200, "application/json", result);
-        return;
-      }
+      buf.get()[size] = 0;
+      
+      server.send(200, "application/json", buf.get());
+      return;
     }
   }
   server.send(200, "application/json", "{}");
