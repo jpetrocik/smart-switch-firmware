@@ -25,13 +25,13 @@ curl -X PUT "http://192.168.1.1/config"
 ```
 
 ### Query Parameters
-ssid = wifi name
-password = wifi password
-location = The location of the device, default house
-room = The room the device is in, default room
-device = The name of the device, default light
-mqttHost = Hostname of the mqtt broker
-disableLed = Disable the LED when device is on
+| ssid | wifi name |
+| password | wifi password |
+| location | The location of the device, default house |
+| room | The room the device is in, default room |
+| device | The name of the device, default light |
+| mqttHost | Hostname of the mqtt broker |
+| disableLed | Disable the LED when device is on |
 
 Once you run the command the device will restart and connect to your network.
 
