@@ -12,13 +12,12 @@ protected:
     Relay relay;
     Button2 button;
 
-    void buttonReleasedHandler();
-
 public:
     void setStateChangedHandler(RelayStateChangeHandler handler);
     void setupLongClickHandler(LongClickHandler longPressHandler, LongClickHandler longReleaseHandler);
     void turnOff();
     void turnOn();
+    void toggleRelay();
     RELAY_STATE state();
     void setup(uint8_t buttonPin, uint8_t relayPin);
     void loop();
