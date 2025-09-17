@@ -79,7 +79,7 @@ void longReleaseButtonHandler(Button2 &btn)
   }
 }
 
-void handlerRelayStateChange(SWITCH_STATE state)
+void handleSwitchStateChange(SWITCH_STATE state)
 {
   sendCurrentStatus();
   if (!deviceConfig.disableLed)
@@ -133,7 +133,7 @@ void setup()
   digitalWrite(LED_PIN, LED_OFF);
 
   mainSwitch.setup(BUTTON_PIN, RELAY_PIN);
-  mainSwitch.setStateChangedHandler(handlerRelayStateChange);
+  mainSwitch.setStateChangedHandler(handleSwitchStateChange);
   mainSwitch.setupLongClickHandler(longPressButtonHandler, longReleaseButtonHandler);
 
   sprintf(apSsid, CLIENT_ID, ESP.getChipId());
