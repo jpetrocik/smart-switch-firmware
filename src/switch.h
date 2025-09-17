@@ -21,7 +21,7 @@ public:
     void turnOn();
     RELAY_STATE state();
     void setup(uint8_t buttonPin, uint8_t relayPin);
-    void Xloop();
+    void loop();
 };
 
 #endif

@@ -11,7 +11,7 @@ void Switch::setup(uint8_t buttonPin, uint8_t relayPin)
     relay.begin(relayPin);
 }
 
-void Switch::Xloop()
+void Switch::loop()
 {
     button.loop();
     relay.loop();
