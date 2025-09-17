@@ -112,6 +112,11 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   {
     closeRelay();
   }
+  //TODO Remove once SmartHome app is updated
+  else if ((char)payload[0] == '3')
+  {
+    mqttSendStatus();
+  }
 }
 
 void mqttSendStatus()
@@ -121,7 +126,7 @@ void mqttSendStatus()
   {
     RELAY_STATE currentRelayState = (RELAY_STATE)relayState();
 
-    sprintf(_jsonStatusBuffer, "{\"state\";\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
+    sprintf(_jsonStatusBuffer, "{\"state\":\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
             currentRelayState == RELAY_CLOSED ? "ON" : "OFF",
             currentRelayState == RELAY_CLOSED ? 1 : 0,
             ESP.getChipId(),
