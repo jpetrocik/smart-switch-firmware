@@ -41,7 +41,7 @@ void stopTicker()
  * Called every 2s while the button is being pressed
  * to indicate via the LED what the current action
  * will be when the button is released
- * 
+ *
  * 8s-16s LED flashes quickly. Switch to AP mode, used to reset wifi credentials
  * 16s-30s LED turns off. Reboot the device
  * 30s- LED turns on. Factory Reset
@@ -79,7 +79,7 @@ void longReleaseButtonHandler(Button2 &btn)
   }
 }
 
-void handlerRelayStateChange(RELAY_STATE state)
+void handlerRelayStateChange(SWITCH_STATE state)
 {
   sendCurrentStatus();
   if (!deviceConfig.disableLed)

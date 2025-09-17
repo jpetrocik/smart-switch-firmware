@@ -15,7 +15,7 @@ enum RELAY_STATE
 };
 #endif
 
-typedef void (*RelayStateChangeHandler)(RELAY_STATE state);
+typedef std::function<void(RELAY_STATE state)> RelayStateChangeHandler;
 
 class Relay
 {
