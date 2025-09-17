@@ -17,19 +17,19 @@ void webServerLoop()
 
 void handleOpenRelay()
 {
-  openRelay();
+  webserver_deviceConfig->relay->openRelay();
   server.send(200);
 }
 
 void handleCloseRelay()
 {
-  closeRelay();
+  webserver_deviceConfig->relay->closeRelay();
   server.send(200);
 }
 
 void handleStatus()
 {
-  sprintf(webserver_jsonStatusBuffer, "{\"status\":%i, \"changed\":false}", (int)relayState());
+  sprintf(webserver_jsonStatusBuffer, "{\"status\":%i, \"changed\":false}", (int)webserver_deviceConfig->relay->relayState());
   server.send(200, "application/json", webserver_jsonStatusBuffer);
 }
 

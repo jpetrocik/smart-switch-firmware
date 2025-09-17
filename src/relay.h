@@ -15,9 +15,26 @@ enum RELAY_STATE
 };
 #endif
 
-void toogleRelay();
-void openRelay();
-void closeRelay();
-RELAY_STATE relayState();
+class Relay
+{
+    typedef void (*StateChangeHandler)(RELAY_STATE state);
+
+protected:
+    uint8_t pin;
+    RELAY_STATE state;
+    RELAY_STATE prevState;
+    unsigned long debounceTime;
+    StateChangeHandler stateChangehandler;
+    void operateRelay(RELAY_STATE state);
+
+public:
+    void begin(uint8_t relayPin);
+    void setChangedHandler(StateChangeHandler handler);
+    void loop();
+    void toogleRelay();
+    void openRelay();
+    void closeRelay();
+    RELAY_STATE relayState();
+};
 
 #endif

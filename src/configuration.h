@@ -2,6 +2,7 @@
 #define Configuration_h
 
 #include <Arduino.h>
+#include "relay.h"
 
 #define CLIENT_ID "switch-%i"
 
@@ -65,8 +66,7 @@ struct DeviceConfig
   char wifiPassword[50];
   bool disableLed = false;
   bool dirty = false;
-  void (*startTicker)(float seconds);
-  void (*stopTicker)();
+  Relay *relay;
 };
 
 #endif

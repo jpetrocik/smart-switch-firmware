@@ -15,24 +15,24 @@
 Ticker ticker;
 
 Button2 button;
-Button2 relay;
+Relay relay;
 
 DeviceConfig deviceConfig;
 
 char apSsid[sizeof(CLIENT_ID) + 10];
 
-void sendCurrentStatus(bool changed);
+void sendCurrentStatus();
 void tick();
 void configSave();
 void configLoad();
 void factoryReset();
 
-void attach(float seconds)
+void startTicker(float seconds)
 {
   ticker.attach(seconds, tick);
 }
 
-void detach()
+void stopTicker()
 {
   ticker.detach();
   digitalWrite(LED_PIN, LED_OFF);
@@ -40,7 +40,7 @@ void detach()
 
 void buttonReleasedHandler(Button2 &btn)
 {
-  toogleRelay();
+  relay.toogleRelay();
 }
 
 void longPressButtonHandler(Button2 &btn)
@@ -51,12 +51,12 @@ void longPressButtonHandler(Button2 &btn)
   }
   else if (btn.getLongClickCount() == 8)
   {
-    deviceConfig.stopTicker();
+    stopTicker();
     digitalWrite(LED_PIN, LED_OFF);
   }
   else if (btn.getLongClickCount() == 4)
   {
-    deviceConfig.startTicker(0.25);
+    startTicker(0.25);
   }
 }
 
@@ -76,12 +76,12 @@ void longReleaseButtonHandler(Button2 &btn)
   }
 }
 
-void handlerRelayStateChange(Button2 &btn)
+void handlerRelayStateChange(RELAY_STATE state)
 {
-  sendCurrentStatus(true);
+  sendCurrentStatus();
   if (!deviceConfig.disableLed)
   {
-    digitalWrite(LED_PIN, btn.isPressed() ? LED_ON : LED_OFF);
+    digitalWrite(LED_PIN, state == RELAY_CLOSED ? LED_ON : LED_OFF);
   }
 }
 
@@ -124,10 +124,6 @@ void setup()
 
   configLoad();
 
-  // setup shared device
-  deviceConfig.startTicker = attach;
-  deviceConfig.stopTicker = detach;
-
   Serial.println(deviceConfig.hostname);
 
   pinMode(LED_PIN, OUTPUT);
@@ -140,9 +136,10 @@ void setup()
   button.setLongClickDetectedHandler(longPressButtonHandler);
   button.setLongClickHandler(longReleaseButtonHandler);
 
-  // TODO activeLow variable should be controlled by configuration.h
-  relay.begin(RELAY_PIN, OUTPUT, false);
+  relay.begin(RELAY_PIN);
   relay.setChangedHandler(handlerRelayStateChange);
+
+  deviceConfig.relay = &relay;
 
   sprintf(apSsid, CLIENT_ID, ESP.getChipId());
   wifi_manager_setEventHandler(wifiEventHandler);
@@ -192,10 +189,10 @@ void loop()
 #endif
 }
 
-void sendCurrentStatus(bool hasChanged)
+void sendCurrentStatus()
 {
 #ifdef MQTT_ENABLED
-  mqttSendStatus(hasChanged);
+  mqttSendStatus();
 #endif
 }
 
@@ -320,4 +317,12 @@ void configLoad()
       }
     }
   }
+}
+
+void closeRelay() {
+  relay.closeRelay();
+}
+
+void openRelay() {
+  relay.openRelay();
 }
