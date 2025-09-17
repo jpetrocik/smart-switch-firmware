@@ -4,32 +4,33 @@
 #include <Arduino.h>
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
-#include "relay.h"
+#include "switch.h"
 
 ESP8266WebServer server(80);
 char webserver_jsonStatusBuffer[300];
 DeviceConfig *webserver_deviceConfig;
+Switch *webserver_switch;
 
 void webServerLoop()
 {
   server.handleClient();
 }
 
-void handleOpenRelay()
+void handleTurnOff()
 {
-  webserver_deviceConfig->relay->openRelay();
+  webserver_switch->turnOff();
   server.send(200);
 }
 
-void handleCloseRelay()
+void handleTurnOn()
 {
-  webserver_deviceConfig->relay->closeRelay();
+  webserver_switch->turnOn();
   server.send(200);
 }
 
 void handleStatus()
 {
-  sprintf(webserver_jsonStatusBuffer, "{\"status\":%i, \"changed\":false}", (int)webserver_deviceConfig->relay->relayState());
+  sprintf(webserver_jsonStatusBuffer, "{\"status\":%i, \"changed\":false}", (int)webserver_switch->state());
   server.send(200, "application/json", webserver_jsonStatusBuffer);
 }
 
@@ -106,14 +107,15 @@ void handleSaveConfigureDevice()
   server.send(200);
 }
 
-void webServerSetup(DeviceConfig *deviceConfig)
+void webServerSetup(DeviceConfig *deviceConfig, Switch *switch1)
 {
   webserver_deviceConfig = deviceConfig;
+  webserver_switch = switch1;
 
   Serial.println("Starting web server on port 80");
   server.on("/", handleStatus);
-  server.on("/relay/close", handleCloseRelay);
-  server.on("/relay/open", handleOpenRelay);
+  server.on("/switch/on", handleTurnOn);
+  server.on("/switch/off", handleTurnOff);
   server.on("/restart", HTTP_POST, handleRestart);
   server.on("/config", HTTP_GET, handleConfigureDevice);
   server.on("/config", HTTP_PUT, handleSaveConfigureDevice);

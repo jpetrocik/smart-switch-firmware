@@ -6,10 +6,11 @@
 
 #define CLIENT_ID "switch-%i"
 
-#define SONOFF_BASIC
+// #define SONOFF_BASIC
 // #define KMC_SMART_PLUG
 // #define SONOFF_DUAL_R2
 // #define KS602S_SWITCH
+#define ESP8266_DEV
 
 #ifdef SONOFF_BASIC
 #define RELAY_PIN 12
@@ -42,6 +43,12 @@
 #define BUTTON_PIN 0
 #endif
 
+#ifdef ESP8266_DEV
+#define RELAY_PIN 12
+#define LED_PIN 2
+#define BUTTON_PIN 0
+#endif
+
 #ifdef LED_INVERTED
   #define LED_ON 0
   #define LED_OFF 1
@@ -66,7 +73,6 @@ struct DeviceConfig
   char wifiPassword[50];
   bool disableLed = false;
   bool dirty = false;
-  Relay *relay;
 };
 
 #endif

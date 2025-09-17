@@ -61,9 +61,12 @@ void Relay::loop()
 void Relay::begin(uint8_t realyPin)
 {
     pin = realyPin;
+
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, RELAY_OPEN);
 }
 
-void Relay::setChangedHandler(StateChangeHandler handler)
+void Relay::setStateChangedHandler(RelayStateChangeHandler handler)
 {
     stateChangehandler = handler;
 }
