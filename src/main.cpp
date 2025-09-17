@@ -313,13 +313,3 @@ void configLoad()
     }
   }
 }
-
-void closeRelay()
-{
-  mainSwitch.turnOn();
-}
-
-void openRelay()
-{
-  mainSwitch.turnOff();
-}
