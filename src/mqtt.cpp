@@ -6,7 +6,7 @@
 #include <PubSubClient.h>
 #include <WiFiClient.h>
 #include "mqtt.h"
-#include "relay.h"
+#include "switch.h"
 
 WiFiClient _espClient;
 PubSubClient _mqClient(_espClient);
@@ -20,13 +20,15 @@ char _lwtTopic[100];
 char _jsonStatusBuffer[140];
 DeviceConfig *_mqttDeviceConfig;
 unsigned long lastStatePublishCounter = 0;
+Switch *_mqttSwitch;
 
 void mqttCallback(char *topic, byte *payload, unsigned int length);
 void mqttConnect();
 
-void mqttSetup(DeviceConfig *deviceConfig)
+void mqttSetup(DeviceConfig *deviceConfig, Switch *switch1)
 {
   _mqttDeviceConfig = deviceConfig;
+  _mqttSwitch = switch1;
 
   if (strlen(_mqttDeviceConfig->mqttHost) == 0)
   {
@@ -106,11 +108,11 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
 {
   if ((char)payload[0] == '0')
   {
-    openRelay();
+    _mqttSwitch->turnOff();
   }
   else if ((char)payload[0] == '1')
   {
-    closeRelay();
+    _mqttSwitch->turnOn();
   }
   //TODO Remove once SmartHome app is updated
   else if ((char)payload[0] == '3')
@@ -124,7 +126,7 @@ void mqttSendStatus()
 
   if (_mqClient.connected())
   {
-    RELAY_STATE currentRelayState = (RELAY_STATE)relayState();
+    RELAY_STATE currentRelayState = (RELAY_STATE)_mqttSwitch->state();
 
     sprintf(_jsonStatusBuffer, "{\"state\":\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
             currentRelayState == RELAY_CLOSED ? "ON" : "OFF",

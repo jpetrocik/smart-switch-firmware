@@ -1,7 +1,6 @@
 #include <FS.h>
 #include <Ticker.h>
 #include <ArduinoJson.h>
-#include <Button2.h>
 #include <ESP8266WiFi.h>
 
 #include "configuration.h"
@@ -11,11 +10,11 @@
 #include "mdns.h"
 #include "ota.h"
 #include "webserver.h"
+#include "switch.h"
 
 Ticker ticker;
 
-Button2 button;
-Button2 relay;
+Switch mainSwitch;
 
 DeviceConfig deviceConfig;
 
@@ -27,22 +26,27 @@ void configSave();
 void configLoad();
 void factoryReset();
 
-void attach(float seconds)
+void startTicker(float seconds)
 {
   ticker.attach(seconds, tick);
 }
 
-void detach()
+void stopTicker()
 {
   ticker.detach();
   digitalWrite(LED_PIN, LED_OFF);
 }
 
-void buttonReleasedHandler(Button2 &btn)
-{
-  toogleRelay();
-}
 
+/**
+ * Called every 2s while the button is being pressed
+ * to indicate via the LED what the current action
+ * will be when the button is released
+ * 
+ * 8s-16s LED flashes quickly. Switch to AP mode, used to reset wifi credentials
+ * 16s-30s LED turns off. Reboot the device
+ * 30s- LED turns on. Factory Reset
+ */
 void longPressButtonHandler(Button2 &btn)
 {
   if (btn.getLongClickCount() == 15)
@@ -51,12 +55,12 @@ void longPressButtonHandler(Button2 &btn)
   }
   else if (btn.getLongClickCount() == 8)
   {
-    deviceConfig.stopTicker();
+    stopTicker();
     digitalWrite(LED_PIN, LED_OFF);
   }
   else if (btn.getLongClickCount() == 4)
   {
-    deviceConfig.startTicker(0.25);
+    startTicker(0.25);
   }
 }
 
@@ -76,12 +80,12 @@ void longReleaseButtonHandler(Button2 &btn)
   }
 }
 
-void handlerRelayStateChange(Button2 &btn)
+void handlerRelayStateChange(RELAY_STATE state)
 {
   sendCurrentStatus();
   if (!deviceConfig.disableLed)
   {
-    digitalWrite(LED_PIN, btn.isPressed() ? LED_ON : LED_OFF);
+    digitalWrite(LED_PIN, state == RELAY_CLOSED ? LED_ON : LED_OFF);
   }
 }
 
@@ -91,13 +95,13 @@ void wifiEventHandler(WIFI_MANAGER_EVENTS event)
   {
   case STATION_STARTING:
     Serial.println("Connecting to WiFi");
-    ticker.attach(.75, tick);
+    startTicker(.75);
     break;
   case STATION_CONNECTED:
     Serial.println("Connected to WiFi");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
-    ticker.detach();
+    stopTicker();
     digitalWrite(LED_PIN, LED_OFF);
 #ifdef MDNS_ENABLED
     mdnsSetup(deviceConfig.hostname);
@@ -105,11 +109,11 @@ void wifiEventHandler(WIFI_MANAGER_EVENTS event)
     break;
   case STATION_DISCONNECTED:
     Serial.println("Disconnected from WiFi");
-    ticker.attach(.75, tick);
+    startTicker(.75);
     break;
   case ACCESS_POINT_STARTING:
     Serial.println("Starting AP");
-    ticker.attach(.25, tick);
+    startTicker(.25);
     break;
   }
 }
@@ -124,25 +128,17 @@ void setup()
 
   configLoad();
 
-  // setup shared device
-  deviceConfig.startTicker = attach;
-  deviceConfig.stopTicker = detach;
-
   Serial.println(deviceConfig.hostname);
 
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LED_OFF);
 
-  button.begin(BUTTON_PIN, INPUT);
-  button.setClickHandler(buttonReleasedHandler);
-  button.setLongClickTime(2000);
-  button.setLongClickDetectedRetriggerable(true);
-  button.setLongClickDetectedHandler(longPressButtonHandler);
-  button.setLongClickHandler(longReleaseButtonHandler);
-
-  // TODO activeLow variable should be controlled by configuration.h
-  relay.begin(RELAY_PIN, OUTPUT, false);
-  relay.setChangedHandler(handlerRelayStateChange);
+  mainSwitch.setup(BUTTON_PIN, RELAY_PIN);
+  mainSwitch.setStateChangedHandler(handlerRelayStateChange);
+  mainSwitch.setLongClickTime(2000);
+  mainSwitch.setLongClickDetectedRetriggerable(true);
+  mainSwitch.setLongClickDetectedHandler(longPressButtonHandler);
+  mainSwitch.setLongClickHandler(longReleaseButtonHandler);
 
   sprintf(apSsid, CLIENT_ID, ESP.getChipId());
   wifi_manager_setEventHandler(wifiEventHandler);
@@ -153,11 +149,11 @@ void setup()
 #endif
 
 #ifdef MQTT_ENABLED
-  mqttSetup(&deviceConfig);
+  mqttSetup(&deviceConfig, &mainSwitch);
 #endif
 
 #ifdef WEBSERVER_ENABLED
-  webServerSetup(&deviceConfig);
+  webServerSetup(&deviceConfig, &mainSwitch);
 #endif
 }
 
@@ -170,8 +166,7 @@ void loop()
     ESP.restart();
   }
 
-  button.loop();
-  relay.loop();
+  mainSwitch.Xloop();
 
   wifi_manager_loop();
 
@@ -215,8 +210,6 @@ void tick()
   digitalWrite(LED_PIN, !state);
 }
 
-// Called to save the configuration data after
-// the device goes into AP mode for configuration
 void configSave()
 {
   JsonDocument jsonDoc;
@@ -242,7 +235,6 @@ void configSave()
   }
 }
 
-// Loads the configuration data on start up
 void configLoad()
 {
   Serial.println("Loading config data....");

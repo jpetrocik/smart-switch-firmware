@@ -2,12 +2,12 @@
 #include "configuration.h"
 #include "relay.h"
 
-void operateDoor(RELAY_STATE state)
+void Relay::operateRelay(RELAY_STATE state)
 {
     digitalWrite(RELAY_PIN, state);
 }
 
-void toogleRelay()
+void Relay::toogleRelay()
 {
     RELAY_STATE currentRelayState = relayState();
     if (currentRelayState == RELAY_CLOSED)
@@ -20,25 +20,53 @@ void toogleRelay()
     }
 }
 
-void openRelay()
+void Relay::openRelay()
 {
     RELAY_STATE currentRelayState = relayState();
     if (currentRelayState == RELAY_OPEN)
         return;
 
-    operateDoor(RELAY_OPEN);
+    operateRelay(RELAY_OPEN);
 }
 
-void closeRelay()
+void Relay::closeRelay()
 {
     RELAY_STATE currentRelayState = relayState();
     if (currentRelayState == RELAY_CLOSED)
         return;
 
-    operateDoor(RELAY_CLOSED);
+    operateRelay(RELAY_CLOSED);
 }
 
-RELAY_STATE relayState()
+RELAY_STATE Relay::relayState()
 {
-    return (RELAY_STATE)digitalRead(RELAY_PIN);
+    return (RELAY_STATE)digitalRead(pin);
+}
+
+void Relay::loop()
+{
+    if (debounceTime < millis())
+    {
+        prevState = state;
+
+        state = relayState();
+        if (prevState != state)
+        {
+            debounceTime = 50 + millis();
+            stateChangehandler(state);
+        }
+    }
+}
+
+void Relay::begin(uint8_t realyPin)
+{
+    pin = realyPin;
+
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, RELAY_OPEN);
+}
+
+void Relay::setStateChangedHandler(RelayStateChangeHandler handler)
+{
+    stateChangehandler = handler;
 }
