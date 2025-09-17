@@ -21,7 +21,7 @@ DeviceConfig deviceConfig;
 
 char apSsid[sizeof(CLIENT_ID) + 10];
 
-void sendCurrentStatus(bool changed);
+void sendCurrentStatus();
 void tick();
 void configSave();
 void configLoad();
@@ -78,7 +78,7 @@ void longReleaseButtonHandler(Button2 &btn)
 
 void handlerRelayStateChange(Button2 &btn)
 {
-  sendCurrentStatus(true);
+  sendCurrentStatus();
   if (!deviceConfig.disableLed)
   {
     digitalWrite(LED_PIN, btn.isPressed() ? LED_ON : LED_OFF);
@@ -192,10 +192,10 @@ void loop()
 #endif
 }
 
-void sendCurrentStatus(bool hasChanged)
+void sendCurrentStatus()
 {
 #ifdef MQTT_ENABLED
-  mqttSendStatus(hasChanged);
+  mqttSendStatus();
 #endif
 }
 
