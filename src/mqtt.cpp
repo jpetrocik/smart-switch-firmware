@@ -5,6 +5,7 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <WiFiClient.h>
+#include "mqtt.h"
 #include "relay.h"
 
 WiFiClient _espClient;
@@ -16,14 +17,12 @@ unsigned long _nextReconnectAttempt = 0;
 char _commandTopic[100];
 char _statusTopic[100];
 char _lwtTopic[100];
-// char _stateTopic[100];
 char _jsonStatusBuffer[140];
 DeviceConfig *_mqttDeviceConfig;
 unsigned long lastStatePublishCounter = 0;
 
 void mqttCallback(char *topic, byte *payload, unsigned int length);
 void mqttConnect();
-void mqttSendStatus();
 
 void mqttSetup(DeviceConfig *deviceConfig)
 {
@@ -43,7 +42,6 @@ void mqttSetup(DeviceConfig *deviceConfig)
   sprintf(_commandTopic, "%s/%s/%s/command", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
   sprintf(_statusTopic, "%s/%s/%s/status", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
   sprintf(_lwtTopic, "%s/%s/%s/LWT", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
-  // sprintf(_stateTopic, "%s/%s/%s/tele/STATE", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
 }
 
 void mqttLoop()
@@ -123,12 +121,12 @@ void mqttSendStatus()
   {
     RELAY_STATE currentRelayState = (RELAY_STATE)_mqttDeviceConfig->relay->relayState();
 
-    sprintf(_jsonStatusBuffer, "{\"state\";\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}", 
-      currentRelayState == RELAY_CLOSED ? "ON" : "OFF", 
-      currentRelayState == RELAY_CLOSED ? 1 : 0, 
-      ESP.getChipId(), 
-      WiFi.localIP().toString().c_str(), 
-      WiFi.RSSI());
+    sprintf(_jsonStatusBuffer, "{\"state\";\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
+            currentRelayState == RELAY_CLOSED ? "ON" : "OFF",
+            currentRelayState == RELAY_CLOSED ? 1 : 0,
+            ESP.getChipId(),
+            WiFi.localIP().toString().c_str(),
+            WiFi.RSSI());
     _mqClient.publish(_statusTopic, _jsonStatusBuffer, true);
   }
 }
