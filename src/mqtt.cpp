@@ -112,6 +112,10 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   }
   else if ((char)payload[0] == '1')
   {
+    _mqttSwitch->turnOnLow();
+  }
+  else if ((char)payload[0] == '2')
+  {
     _mqttSwitch->turnOnHigh();
   }
   // TODO Remove once SmartHome app is updated
