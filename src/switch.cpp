@@ -4,16 +4,16 @@
 
 void Switch::setup(uint8_t buttonPin, uint8_t relayPin)
 {
-    begin(buttonPin, INPUT);
-    setClickHandler([this](Button2 &btn)
-                    { this->buttonReleasedHandler(); });
+    button.begin(buttonPin, INPUT);
+    button.setClickHandler([this](Button2 &btn)
+                           { this->buttonReleasedHandler(); });
 
     relay.begin(relayPin);
 }
 
 void Switch::Xloop()
 {
-    loop();
+    button.loop();
     relay.loop();
 }
 
@@ -27,14 +27,25 @@ void Switch::buttonReleasedHandler()
     relay.toogleRelay();
 }
 
-void Switch::turnOff() {
+void Switch::turnOff()
+{
     relay.openRelay();
 }
 
-void Switch::turnOn() {
+void Switch::turnOn()
+{
     relay.closeRelay();
 }
 
-RELAY_STATE Switch::state() {
+RELAY_STATE Switch::state()
+{
     return relay.relayState();
+}
+
+void Switch::setupLongClickHandler(LongClickHandler longPressButtonHandler, LongClickHandler longReleaseButtonHandler)
+{
+    button.setLongClickTime(2000);
+    button.setLongClickDetectedRetriggerable(true);
+    button.setLongClickDetectedHandler(longPressButtonHandler);
+    button.setLongClickHandler(longReleaseButtonHandler);
 }

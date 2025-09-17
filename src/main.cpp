@@ -37,12 +37,11 @@ void stopTicker()
   digitalWrite(LED_PIN, LED_OFF);
 }
 
-
 /**
  * Called every 2s while the button is being pressed
  * to indicate via the LED what the current action
  * will be when the button is released
- * 
+ *
  * 8s-16s LED flashes quickly. Switch to AP mode, used to reset wifi credentials
  * 16s-30s LED turns off. Reboot the device
  * 30s- LED turns on. Factory Reset
@@ -135,10 +134,7 @@ void setup()
 
   mainSwitch.setup(BUTTON_PIN, RELAY_PIN);
   mainSwitch.setStateChangedHandler(handlerRelayStateChange);
-  mainSwitch.setLongClickTime(2000);
-  mainSwitch.setLongClickDetectedRetriggerable(true);
-  mainSwitch.setLongClickDetectedHandler(longPressButtonHandler);
-  mainSwitch.setLongClickHandler(longReleaseButtonHandler);
+  mainSwitch.setupLongClickHandler(longPressButtonHandler, longReleaseButtonHandler);
 
   sprintf(apSsid, CLIENT_ID, ESP.getChipId());
   wifi_manager_setEventHandler(wifiEventHandler);
