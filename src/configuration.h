@@ -47,6 +47,7 @@
 #define RELAY_PIN 12
 #define LED_PIN 2
 #define BUTTON_PIN 0
+#define LED_INVERTED
 #endif
 
 #ifdef LED_INVERTED

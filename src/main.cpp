@@ -95,13 +95,13 @@ void wifiEventHandler(WIFI_MANAGER_EVENTS event)
   {
   case STATION_STARTING:
     Serial.println("Connecting to WiFi");
-    ticker.attach(.75, tick);
+    startTicker(.75);
     break;
   case STATION_CONNECTED:
     Serial.println("Connected to WiFi");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
-    ticker.detach();
+    stopTicker();
     digitalWrite(LED_PIN, LED_OFF);
 #ifdef MDNS_ENABLED
     mdnsSetup(deviceConfig.hostname);
@@ -109,11 +109,11 @@ void wifiEventHandler(WIFI_MANAGER_EVENTS event)
     break;
   case STATION_DISCONNECTED:
     Serial.println("Disconnected from WiFi");
-    ticker.attach(.75, tick);
+    startTicker(.75);
     break;
   case ACCESS_POINT_STARTING:
     Serial.println("Starting AP");
-    ticker.attach(.25, tick);
+    startTicker(.25);
     break;
   }
 }
@@ -129,6 +129,9 @@ void setup()
   configLoad();
 
   Serial.println(deviceConfig.hostname);
+
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LED_OFF);
 
   mainSwitch.setup(BUTTON_PIN, RELAY_PIN);
   mainSwitch.setStateChangedHandler(handlerRelayStateChange);
