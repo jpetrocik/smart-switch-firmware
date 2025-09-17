@@ -79,7 +79,7 @@ void longReleaseButtonHandler(Button2 &btn)
   }
 }
 
-void handlerRelayStateChange(RELAY_STATE state)
+void handleSwitchStateChange(SWITCH_STATE state)
 {
   sendCurrentStatus();
   if (!deviceConfig.disableLed)
@@ -133,7 +133,7 @@ void setup()
   digitalWrite(LED_PIN, LED_OFF);
 
   mainSwitch.setup();
-  mainSwitch.setStateChangedHandler(handlerRelayStateChange);
+  mainSwitch.setStateChangedHandler(handleSwitchStateChange);
   mainSwitch.setupLongClickHandler(longPressButtonHandler, longReleaseButtonHandler);
 
   sprintf(apSsid, CLIENT_ID, ESP.getChipId());
@@ -162,7 +162,7 @@ void loop()
     ESP.restart();
   }
 
-  mainSwitch.Xloop();
+  mainSwitch.loop();
 
   wifi_manager_loop();
 

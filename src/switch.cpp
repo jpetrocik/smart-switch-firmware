@@ -21,7 +21,7 @@ void Switch::setup()
                               { this->turnOff(); });
 }
 
-void Switch::Xloop()
+void Switch::loop()
 {
     highButton.loop();
     highRelay.loop();
@@ -60,7 +60,7 @@ void Switch::turnOff()
     switchStateChangeHandler(SWITCH_OFF);
 }
 
-SWICH_STATE Switch::state()
+SWITCH_STATE Switch::state()
 {
     if (highRelay.relayState() == RELAY_CLOSED)
         return SWITCH_HIGH;

@@ -4,7 +4,7 @@
 #include <Button2.h>
 #include "relay.h"
 
-enum SWICH_STATE
+enum SWITCH_STATE
 {
     SWITCH_OFF,
     SWITCH_LOW,
@@ -12,7 +12,7 @@ enum SWICH_STATE
 };
 
 typedef void (*LongClickHandler)(Button2 &);
-typedef void (*SwitchStateChangeHandler)(SWICH_STATE state);
+typedef void (*SwitchStateChangeHandler)(SWITCH_STATE state);
 
 class Switch
 {
@@ -32,9 +32,9 @@ public:
     void turnOff();
     void turnOnHigh();
     void turnOnLow();
-    SWICH_STATE state();
+    SWITCH_STATE state();
     void setup();
-    void Xloop();
+    void loop();
 };
 
 #endif
