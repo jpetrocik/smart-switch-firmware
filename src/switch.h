@@ -24,8 +24,6 @@ protected:
     Button2 offButton;
     SwitchStateChangeHandler switchStateChangeHandler;
 
-    void buttonReleasedHandler();
-
 public:
     void setStateChangedHandler(SwitchStateChangeHandler handler);
     void setupLongClickHandler(LongClickHandler longPressHandler, LongClickHandler longReleaseHandler);
