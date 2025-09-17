@@ -4,20 +4,32 @@
 #include <Button2.h>
 #include "relay.h"
 
-class Switch : public Button2
+enum SWITCH_STATE
+{
+    SWITCH_OFF,
+    SWITCH_ON
+};
+
+typedef void (*LongClickHandler)(Button2 &);
+
+typedef void (*SwitchStateChangeHandler)(SWITCH_STATE state);
+
+class Switch
 {
 protected:
     Relay relay;
-
-    void buttonReleasedHandler();
+    Button2 button;
+    SwitchStateChangeHandler switchStateChangeHandler;
 
 public:
-    void setStateChangedHandler(RelayStateChangeHandler handler);
+    void setStateChangedHandler(SwitchStateChangeHandler handler);
+    void setupLongClickHandler(LongClickHandler longPressHandler, LongClickHandler longReleaseHandler);
     void turnOff();
     void turnOn();
-    RELAY_STATE state();
+    void toggleRelay();
+    SWITCH_STATE state();
     void setup(uint8_t buttonPin, uint8_t relayPin);
-    void Xloop();
+    void loop();
 };
 
 #endif

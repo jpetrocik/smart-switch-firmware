@@ -114,7 +114,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   {
     _mqttSwitch->turnOn();
   }
-  //TODO Remove once SmartHome app is updated
+  // TODO Remove once SmartHome app is updated
   else if ((char)payload[0] == '3')
   {
     mqttSendStatus();
@@ -126,11 +126,11 @@ void mqttSendStatus()
 
   if (_mqClient.connected())
   {
-    RELAY_STATE currentRelayState = (RELAY_STATE)_mqttSwitch->state();
+    SWITCH_STATE currentRelayState = (SWITCH_STATE)_mqttSwitch->state();
 
     sprintf(_jsonStatusBuffer, "{\"state\":\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
-            currentRelayState == RELAY_CLOSED ? "ON" : "OFF",
-            currentRelayState == RELAY_CLOSED ? 1 : 0,
+            currentRelayState == SWITCH_ON ? "ON" : "OFF",
+            currentRelayState == SWITCH_ON ? 1 : 0,
             ESP.getChipId(),
             WiFi.localIP().toString().c_str(),
             WiFi.RSSI());

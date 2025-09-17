@@ -52,11 +52,11 @@ void handleConfigureDevice()
     if (configFile)
     {
       size_t size = configFile.size();
-      std::unique_ptr<char[]> buf(new char[size+1]);
+      std::unique_ptr<char[]> buf(new char[size + 1]);
 
       configFile.readBytes(buf.get(), size);
       buf.get()[size] = 0;
-      
+
       server.send(200, "application/json", buf.get());
       return;
     }

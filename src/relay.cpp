@@ -4,7 +4,7 @@
 
 void Relay::operateRelay(RELAY_STATE state)
 {
-    digitalWrite(RELAY_PIN, state);
+    digitalWrite(pin, state);
 }
 
 void Relay::toogleRelay()
