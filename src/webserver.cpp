@@ -16,15 +16,15 @@ void webServerLoop()
   server.handleClient();
 }
 
-void handleTurnOff()
+void handleCloseDoor()
 {
-  webserver_switch->turnOff();
+  webserver_switch->closeDoor();
   server.send(200);
 }
 
-void handleTurnOn()
+void handleOpenDoor()
 {
-  webserver_switch->turnOn();
+  webserver_switch->openDoor();
   server.send(200);
 }
 
@@ -114,8 +114,8 @@ void webServerSetup(DeviceConfig *deviceConfig, Switch *switch1)
 
   Serial.println("Starting web server on port 80");
   server.on("/", handleStatus);
-  server.on("/switch/on", handleTurnOn);
-  server.on("/switch/off", handleTurnOff);
+  server.on("/door/open", handleOpenDoor);
+  server.on("/door/close", handleCloseDoor);
   server.on("/restart", HTTP_POST, handleRestart);
   server.on("/config", HTTP_GET, handleConfigureDevice);
   server.on("/config", HTTP_PUT, handleSaveConfigureDevice);

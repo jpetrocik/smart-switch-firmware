@@ -24,9 +24,9 @@ protected:
 public:
     void setStateChangedHandler(DoorStateChangeHandler handler);
     void setupLongClickHandler(LongClickHandler longPressHandler, LongClickHandler longReleaseHandler);
-    void turnOff();
-    void turnOn();
-    void toggleRelay();
+    void closeDoor();
+    void openDoor();
+    void toggleDoor();
     DOOR_STATE state();
     void setup(uint8_t buttonPin, uint8_t relayPin, uint8_t reedPin);
     void loop();

@@ -6,7 +6,7 @@ void Switch::setup(uint8_t buttonPin, uint8_t relayPin, uint8_t reedPin)
 {
     button.begin(buttonPin, INPUT);
     button.setClickHandler([this](Button2 &btn)
-                           { this->toggleRelay(); });
+                           { this->toggleDoor(); });
 
     relay.begin(relayPin, reedPin);
     relay.setStateChangedHandler([this](RELAY_STATE state)
@@ -24,17 +24,17 @@ void Switch::setStateChangedHandler(DoorStateChangeHandler handler)
     doorStateChangeHandler = handler;
 }
 
-void Switch::toggleRelay()
+void Switch::toggleDoor()
 {
     relay.toogleRelay();
 }
 
-void Switch::turnOff()
+void Switch::closeDoor()
 {
     relay.openRelay();
 }
 
-void Switch::turnOn()
+void Switch::openDoor()
 {
     relay.closeRelay();
 }
