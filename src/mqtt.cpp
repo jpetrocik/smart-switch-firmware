@@ -5,7 +5,8 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <WiFiClient.h>
-#include "relay.h"
+#include "mqtt.h"
+#include "switch.h"
 
 WiFiClient _espClient;
 PubSubClient _mqClient(_espClient);
@@ -16,18 +17,18 @@ unsigned long _nextReconnectAttempt = 0;
 char _commandTopic[100];
 char _statusTopic[100];
 char _lwtTopic[100];
-char _stateTopic[100];
 char _jsonStatusBuffer[140];
 DeviceConfig *_mqttDeviceConfig;
 unsigned long lastStatePublishCounter = 0;
+Switch *_mqttSwitch;
 
 void mqttCallback(char *topic, byte *payload, unsigned int length);
 void mqttConnect();
-void mqttSendStatus(boolean hasChanged);
 
-void mqttSetup(DeviceConfig *deviceConfig)
+void mqttSetup(DeviceConfig *deviceConfig, Switch *switch1)
 {
   _mqttDeviceConfig = deviceConfig;
+  _mqttSwitch = switch1;
 
   if (strlen(_mqttDeviceConfig->mqttHost) == 0)
   {
@@ -42,13 +43,7 @@ void mqttSetup(DeviceConfig *deviceConfig)
 
   sprintf(_commandTopic, "%s/%s/%s/command", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
   sprintf(_statusTopic, "%s/%s/%s/status", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
-  sprintf(_lwtTopic, "%s/%s/%s/tele/LWT", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
-  sprintf(_stateTopic, "%s/%s/%s/tele/STATE", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
-}
-
-void mqttStatus(char *mqttStatus)
-{
-  sprintf(mqttStatus, "{\"status\":\"%s\",\"command\":\"%s\", \"status\":\"%s\"}", _mqClient.connected() ? "connected" : "not connected", _commandTopic, _statusTopic);
+  sprintf(_lwtTopic, "%s/%s/%s/LWT", _mqttDeviceConfig->locationName, _mqttDeviceConfig->roomName, _mqttDeviceConfig->deviceName);
 }
 
 void mqttLoop()
@@ -64,8 +59,7 @@ void mqttLoop()
     // Publish state every 5 minutes
     if (millis() > 5 * 60 * 1000 * lastStatePublishCounter)
     {
-      sprintf(_jsonStatusBuffer, "{\"chipId\":%i, \"ipAddress\":\"%s\"}", ESP.getChipId(), WiFi.localIP().toString().c_str());
-      _mqClient.publish(_stateTopic, _jsonStatusBuffer);
+      mqttSendStatus();
       lastStatePublishCounter++;
     }
   }
@@ -114,27 +108,33 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
 {
   if ((char)payload[0] == '0')
   {
-    openRelay();
+    _mqttSwitch->turnOff();
   }
   else if ((char)payload[0] == '1')
   {
-    closeRelay();
+    _mqttSwitch->turnOn();
   }
+  // TODO Remove once SmartHome app is updated
   else if ((char)payload[0] == '3')
   {
-    mqttSendStatus(false);
+    mqttSendStatus();
   }
 }
 
-void mqttSendStatus(boolean hasChanged)
+void mqttSendStatus()
 {
-  RELAY_STATE currentRelayState = (RELAY_STATE)relayState();
-
-  sprintf(_jsonStatusBuffer, "{\"status\":%i, \"changed\":%s}", (int)currentRelayState, hasChanged ? "true" : "false");
 
   if (_mqClient.connected())
   {
-    _mqClient.publish(_statusTopic, _jsonStatusBuffer);
+    SWITCH_STATE currentRelayState = (SWITCH_STATE)_mqttSwitch->state();
+
+    sprintf(_jsonStatusBuffer, "{\"state\":\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
+            currentRelayState == SWITCH_ON ? "ON" : "OFF",
+            currentRelayState == SWITCH_ON ? 1 : 0,
+            ESP.getChipId(),
+            WiFi.localIP().toString().c_str(),
+            WiFi.RSSI());
+    _mqClient.publish(_statusTopic, _jsonStatusBuffer, true);
   }
 }
 #endif
