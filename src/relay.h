@@ -1,6 +1,8 @@
 #ifndef RELAY_H
 #define RELAY_H
 
+#include "configuration.h"
+
 #ifdef RELAY_INVERTED
 enum RELAY_STATE
 {
