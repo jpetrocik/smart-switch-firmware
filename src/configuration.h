@@ -16,6 +16,7 @@
 #ifdef SONOFF_BASIC
 #define RELAY_PIN 12
 #define LED_PIN 13
+#define BUTTON_PIN 0
 #define LED_INVERTED
 #endif
 
@@ -44,9 +45,12 @@
 #endif
 
 #ifdef GARAGE
-#define RELAY_PIN 12
+#define RELAY_PIN 14
+#define REED_PIN 12
 #define LED_PIN 2
 #define BUTTON_PIN 0
+#define RELAY_INVERTED
+#define LED_INVERTED
 #endif
 
 #ifdef ESP8266_DEV
@@ -71,17 +75,10 @@
 
 struct DeviceConfig
 {
-<<<<<<< HEAD
   char deviceName[20] = "door";
   char roomName[20] = "garage";
   char locationName[20] = "house";
   char hostname[41] = "garage-door";
-=======
-  char deviceName[20] = "light";
-  char roomName[20] = "room";
-  char locationName[20] = "house";
-  char hostname[41] = "room-light";
->>>>>>> master
   char mqttHost[50];
   char wifiSsid[25];
   char wifiPassword[50];

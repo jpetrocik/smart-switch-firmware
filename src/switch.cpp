@@ -2,15 +2,15 @@
 #include "switch.h"
 #include "configuration.h"
 
-void Switch::setup(uint8_t buttonPin, uint8_t relayPin)
+void Switch::setup(uint8_t buttonPin, uint8_t relayPin, uint8_t reedPin)
 {
     button.begin(buttonPin, INPUT);
     button.setClickHandler([this](Button2 &btn)
                            { this->toggleRelay(); });
 
-    relay.begin(relayPin);
+    relay.begin(relayPin, reedPin);
     relay.setStateChangedHandler([this](RELAY_STATE state)
-                                 { this->switchStateChangeHandler(state == RELAY_CLOSED ? SWITCH_ON : SWITCH_OFF); });
+                                 { this->doorStateChangeHandler(state == RELAY_CLOSED ? DOOR_CLOSED : DOOR_OPEN); });
 }
 
 void Switch::loop()
@@ -19,9 +19,9 @@ void Switch::loop()
     relay.loop();
 }
 
-void Switch::setStateChangedHandler(SwitchStateChangeHandler handler)
+void Switch::setStateChangedHandler(DoorStateChangeHandler handler)
 {
-    switchStateChangeHandler = handler;
+    doorStateChangeHandler = handler;
 }
 
 void Switch::toggleRelay()
@@ -39,9 +39,9 @@ void Switch::turnOn()
     relay.closeRelay();
 }
 
-SWITCH_STATE Switch::state()
+DOOR_STATE Switch::state()
 {
-    return relay.relayState() == RELAY_CLOSED ? SWITCH_ON : SWITCH_OFF;
+return relay.relayState() == RELAY_CLOSED ? DOOR_CLOSED : DOOR_OPEN;
 }
 
 void Switch::setupLongClickHandler(LongClickHandler longPressButtonHandler, LongClickHandler longReleaseButtonHandler)

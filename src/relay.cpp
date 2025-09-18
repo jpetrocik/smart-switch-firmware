@@ -4,9 +4,9 @@
 
 void Relay::operateRelay(RELAY_STATE state)
 {
-    digitalWrite(14, RELAY_CLOSED);
+    digitalWrite(pin, HIGH);
     delay(1000);
-    digitalWrite(14, RELAY_OPEN);
+    digitalWrite(pin, LOW);
 }
 
 void Relay::toogleRelay()
@@ -42,7 +42,7 @@ void Relay::closeRelay()
 
 RELAY_STATE Relay::relayState()
 {
-    return (RELAY_STATE)digitalRead(pin);
+    return (RELAY_STATE)digitalRead(statusPin);
 }
 
 void Relay::loop()
@@ -54,18 +54,21 @@ void Relay::loop()
         state = relayState();
         if (prevState != state)
         {
-            debounceTime = 50 + millis();
+            debounceTime = 500 + millis();
             stateChangehandler(state);
         }
     }
 }
 
-void Relay::begin(uint8_t realyPin)
+void Relay::begin(uint8_t realyPin, uint8_t reedPin)
 {
     pin = realyPin;
-
     pinMode(pin, OUTPUT);
     digitalWrite(pin, RELAY_OPEN);
+    state = relayState();
+
+    statusPin = reedPin;
+    pinMode(statusPin, INPUT_PULLUP);
 }
 
 void Relay::setStateChangedHandler(RelayStateChangeHandler handler)

@@ -79,12 +79,12 @@ void longReleaseButtonHandler(Button2 &btn)
   }
 }
 
-void handleSwitchStateChange(SWITCH_STATE state)
+void handleSwitchStateChange(DOOR_STATE state)
 {
   sendCurrentStatus();
   if (!deviceConfig.disableLed)
   {
-    digitalWrite(LED_PIN, state == RELAY_CLOSED ? LED_ON : LED_OFF);
+    digitalWrite(LED_PIN, state == DOOR_OPEN ? LED_ON : LED_OFF);
   }
 }
 
@@ -132,7 +132,7 @@ void setup()
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LED_OFF);
 
-  mainSwitch.setup(BUTTON_PIN, RELAY_PIN);
+  mainSwitch.setup(BUTTON_PIN, RELAY_PIN, REED_PIN);
   mainSwitch.setStateChangedHandler(handleSwitchStateChange);
   mainSwitch.setupLongClickHandler(longPressButtonHandler, longReleaseButtonHandler);
 

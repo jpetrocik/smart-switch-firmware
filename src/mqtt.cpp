@@ -126,11 +126,11 @@ void mqttSendStatus()
 
   if (_mqClient.connected())
   {
-    SWITCH_STATE currentRelayState = (SWITCH_STATE)_mqttSwitch->state();
+    DOOR_STATE currentDoorState = (DOOR_STATE)_mqttSwitch->state();
 
     sprintf(_jsonStatusBuffer, "{\"state\":\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
-            currentRelayState == SWITCH_ON ? "ON" : "OFF",
-            currentRelayState == SWITCH_ON ? 1 : 0,
+            currentDoorState == DOOR_CLOSED ? "CLOSED" : "OPEN",
+            (int)currentDoorState,
             ESP.getChipId(),
             WiFi.localIP().toString().c_str(),
             WiFi.RSSI());
