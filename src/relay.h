@@ -1,6 +1,8 @@
 #ifndef RELAY_H
 #define RELAY_H
 
+#include "configuration.h"
+
 #ifdef RELAY_INVERTED
 enum RELAY_STATE
 {
@@ -23,7 +25,7 @@ protected:
     uint8_t pin;
     RELAY_STATE state;
     RELAY_STATE prevState;
-    unsigned long debounceTime;
+    unsigned long debounceTime = 0;
     RelayStateChangeHandler stateChangehandler;
     void operateRelay(RELAY_STATE state);
 
