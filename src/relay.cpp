@@ -42,7 +42,7 @@ void Relay::closeRelay()
 
 RELAY_STATE Relay::relayState()
 {
-    return (RELAY_STATE)digitalRead(statusPin);
+    return (RELAY_STATE)digitalRead(reedPin);
 }
 
 void Relay::loop()
@@ -60,15 +60,15 @@ void Relay::loop()
     }
 }
 
-void Relay::begin(uint8_t realyPin, uint8_t reedPin)
+void Relay::begin(uint8_t relayPin, uint8_t reedPin)
 {
-    pin = realyPin;
+    pin = relayPin;
     pinMode(pin, OUTPUT);
     digitalWrite(pin, RELAY_OPEN);
     state = relayState();
 
-    statusPin = reedPin;
-    pinMode(statusPin, INPUT_PULLUP);
+    this->reedPin = reedPin;
+    pinMode(reedPin, INPUT_PULLUP);
 }
 
 void Relay::setStateChangedHandler(RelayStateChangeHandler handler)

@@ -23,7 +23,7 @@ class Relay
 {
 protected:
     uint8_t pin;
-    uint8_t statusPin;
+    uint8_t reedPin;
     RELAY_STATE state;
     RELAY_STATE prevState;
     unsigned long debounceTime = 0;
