@@ -26,7 +26,7 @@ public:
     void setupLongClickHandler(LongClickHandler longPressHandler, LongClickHandler longReleaseHandler);
     void turnOff();
     void turnOn();
-    void toggleRelay();
+    void toggle();
     SWITCH_STATE state();
     void setup(uint8_t buttonPin, uint8_t relayPin);
     void loop();

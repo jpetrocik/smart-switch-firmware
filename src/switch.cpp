@@ -6,7 +6,7 @@ void Switch::setup(uint8_t buttonPin, uint8_t relayPin)
 {
     button.begin(buttonPin, INPUT);
     button.setClickHandler([this](Button2 &btn)
-                           { this->toggleRelay(); });
+                           { this->toggle(); });
 
     relay.begin(relayPin);
     relay.setStateChangedHandler([this](RELAY_STATE state)
@@ -24,7 +24,7 @@ void Switch::setStateChangedHandler(SwitchStateChangeHandler handler)
     switchStateChangeHandler = handler;
 }
 
-void Switch::toggleRelay()
+void Switch::toggle()
 {
     relay.toogleRelay();
 }

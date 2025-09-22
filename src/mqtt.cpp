@@ -114,6 +114,10 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   {
     _mqttSwitch->turnOn();
   }
+  else if ((char)payload[0] == '2')
+  {
+    _mqttSwitch->toggle();
+  }
   // TODO Remove once SmartHome app is updated
   else if ((char)payload[0] == '3')
   {
