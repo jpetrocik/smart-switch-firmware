@@ -121,7 +121,7 @@ void setup()
 {
   Serial.begin(115200);
 
-  Serial.println("Switch Firmware");
+  Serial.println("House Fan Firmware");
   Serial.print("Build date: ");
   Serial.println(__DATE__ " " __TIME__);
 

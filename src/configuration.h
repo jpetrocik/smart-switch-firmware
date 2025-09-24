@@ -46,9 +46,9 @@
 
 #ifdef SANA_SWITCH_3GANG
 #define HIGH_BUTTON_PIN 12
-#define HIGH_RELY_PIN 13
+#define HIGH_RELY_PIN 6
 #define LOW_BUTTON_PIN 5
-#define LOW_RELY_PIN 15
+#define LOW_RELY_PIN 7
 #define OFF_BUTTON_PIN 3
 #define LED_PIN 2
 #endif
@@ -75,13 +75,13 @@
 
 struct DeviceConfig
 {
-  char deviceName[20] = "light";
-  char roomName[20] = "room";
+  char deviceName[20] = "fan";
+  char roomName[20] = "hallway";
   char locationName[20] = "house";
-  char hostname[41] = "room-light";
-  char mqttHost[50];
-  char wifiSsid[25];
-  char wifiPassword[50];
+  char hostname[41] = "hallway-fan";
+  char mqttHost[50] = "hermes.petrocik.net";
+  char wifiSsid[25]= "PNET";
+  char wifiPassword[50] = "5626278472";
   bool disableLed = false;
   bool dirty = false;
 };
