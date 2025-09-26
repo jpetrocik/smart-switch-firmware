@@ -18,7 +18,7 @@ Switch mainSwitch;
 
 DeviceConfig deviceConfig;
 
-char apSsid[sizeof(CLIENT_ID) + 10];
+char apSsid[sizeof(CLIENT_ID) + 25];
 
 void sendCurrentStatus();
 void tick();
@@ -84,7 +84,18 @@ void handleSwitchStateChange(SWITCH_STATE state)
   sendCurrentStatus();
   if (!deviceConfig.disableLed)
   {
-    digitalWrite(LED_PIN, state == RELAY_CLOSED ? LED_ON : LED_OFF);
+
+    switch (state)
+    {
+    case SWITCH_HIGH:
+      digitalWrite(LOW_LED, LED_OFF);
+      digitalWrite(HIGH_LED, LED_ON);
+      break;
+    case SWITCH_LOW:
+      digitalWrite(HIGH_LED, LED_OFF);
+      digitalWrite(LOW_LED, LED_ON);
+      break;
+    }
   }
 }
 
@@ -131,6 +142,10 @@ void setup()
 
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LED_OFF);
+  pinMode(HIGH_LED, OUTPUT);
+  digitalWrite(HIGH_LED, LED_OFF);
+  pinMode(LOW_LED, OUTPUT);
+  digitalWrite(LOW_LED, LED_OFF);
 
   mainSwitch.setup();
   mainSwitch.setStateChangedHandler(handleSwitchStateChange);

@@ -9,12 +9,22 @@ void Switch::setup()
                                { this->turnOnHigh(); });
 
     highRelay.begin(HIGH_RELY_PIN);
+    highRelay.setStateChangedHandler([this](RELAY_STATE state)
+                                     {     
+                                        if (state == RELAY_CLOSED) {
+                                            switchStateChangeHandler(SWITCH_HIGH);
+                                     } });
 
     lowButton.begin(LOW_BUTTON_PIN, INPUT_PULLUP);
     lowButton.setClickHandler([this](Button2 &btn)
                               { this->turnOnLow(); });
 
     lowRelay.begin(LOW_RELY_PIN);
+    lowRelay.setStateChangedHandler([this](RELAY_STATE state)
+                                     {     
+                                        if (state == RELAY_CLOSED) {
+                                            switchStateChangeHandler(SWITCH_LOW);
+                                     } });
 
     offButton.begin(OFF_BUTTON_PIN, INPUT_PULLUP);
     offButton.setClickHandler([this](Button2 &btn)
@@ -39,18 +49,22 @@ void Switch::setStateChangedHandler(SwitchStateChangeHandler handler)
 
 void Switch::turnOnHigh()
 {
+    if (highRelay.relayState() == RELAY_CLOSED)
+        return;
+
     turnOff();
     delay(50);
     highRelay.closeRelay();
-    switchStateChangeHandler(SWITCH_HIGH);
 }
 
 void Switch::turnOnLow()
 {
+    if (lowRelay.relayState() == RELAY_CLOSED)
+        return;
+
     turnOff();
     delay(50);
     lowRelay.closeRelay();
-    switchStateChangeHandler(SWITCH_LOW);
 }
 
 void Switch::turnOff()

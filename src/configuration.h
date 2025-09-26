@@ -46,11 +46,13 @@
 
 #ifdef SANA_SWITCH_3GANG
 #define HIGH_BUTTON_PIN 12
-#define HIGH_RELY_PIN 6
+#define HIGH_RELY_PIN 13
+#define HIGH_LED 0
 #define LOW_BUTTON_PIN 5
-#define LOW_RELY_PIN 7
+#define LOW_RELY_PIN 15
+#define LOW_LED 14
 #define OFF_BUTTON_PIN 3
-#define LED_PIN 2
+#define LED_PIN 16
 #endif
 
 #ifdef ESP8266_DEV

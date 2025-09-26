@@ -52,7 +52,7 @@ void Relay::loop()
         state = relayState();
         if (prevState != state)
         {
-            debounceTime = 50 + millis();
+            debounceTime = 100 + millis();
             stateChangehandler(state);
         }
     }
