@@ -5,6 +5,7 @@
 void Switch::setup(uint8_t buttonPin, uint8_t relayPin)
 {
     button.begin(buttonPin, INPUT);
+    button.setLongClickTime(1000);
     button.setClickHandler([this](Button2 &btn)
                            { this->toggle(); });
 
