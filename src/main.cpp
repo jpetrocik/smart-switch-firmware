@@ -34,7 +34,9 @@ void startTicker(float seconds)
 void stopTicker()
 {
   ticker.detach();
+#ifdef LED_PIN
   digitalWrite(LED_PIN, LED_OFF);
+#endif
 }
 
 /**
@@ -50,12 +52,16 @@ void longPressButtonHandler(Button2 &btn)
 {
   if (btn.getLongClickCount() == 15)
   {
+#ifdef LED_PIN
     digitalWrite(LED_PIN, LED_ON);
+#endif
   }
   else if (btn.getLongClickCount() == 8)
   {
     stopTicker();
+#ifdef LED_PIN
     digitalWrite(LED_PIN, LED_OFF);
+#endif
   }
   else if (btn.getLongClickCount() == 4)
   {
@@ -88,12 +94,22 @@ void handleSwitchStateChange(SWITCH_STATE state)
     switch (state)
     {
     case SWITCH_HIGH:
+#if defined(LOW_LED) && defined(HIGH_LED)
       digitalWrite(LOW_LED, LED_OFF);
       digitalWrite(HIGH_LED, LED_ON);
       break;
+#endif
     case SWITCH_LOW:
+#if defined(LOW_LED) && defined(HIGH_LED)
       digitalWrite(HIGH_LED, LED_OFF);
       digitalWrite(LOW_LED, LED_ON);
+#endif
+      break;
+    case SWITCH_OFF:
+#if defined(LOW_LED) && defined(HIGH_LED)
+      digitalWrite(HIGH_LED, LED_OFF);
+      digitalWrite(LOW_LED, LED_OFF);
+#endif
       break;
     }
   }
@@ -112,7 +128,9 @@ void wifiEventHandler(WIFI_MANAGER_EVENTS event)
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
     stopTicker();
+#ifdef LED_PIN
     digitalWrite(LED_PIN, LED_OFF);
+#endif
 #ifdef MDNS_ENABLED
     mdnsSetup(deviceConfig.hostname);
 #endif
@@ -140,12 +158,18 @@ void setup()
 
   Serial.println(deviceConfig.hostname);
 
+#ifdef LED_PIN
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LED_OFF);
+#endif
+#ifdef HIGH_LED
   pinMode(HIGH_LED, OUTPUT);
   digitalWrite(HIGH_LED, LED_OFF);
+#endif
+#ifdef LOW_LED
   pinMode(LOW_LED, OUTPUT);
   digitalWrite(LOW_LED, LED_OFF);
+#endif
 
   mainSwitch.setup();
   mainSwitch.setStateChangedHandler(handleSwitchStateChange);
@@ -217,8 +241,10 @@ void factoryReset()
 
 void tick()
 {
+#ifdef LED_PIN
   int state = digitalRead(LED_PIN);
   digitalWrite(LED_PIN, !state);
+#endif
 }
 
 void configSave()

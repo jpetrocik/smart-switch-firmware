@@ -5,6 +5,7 @@
 void Switch::setup()
 {
     highButton.begin(HIGH_BUTTON_PIN, INPUT_PULLUP);
+    highButton.setLongClickTime(1000);
     highButton.setClickHandler([this](Button2 &btn)
                                { this->turnOnHigh(); });
 
@@ -16,6 +17,7 @@ void Switch::setup()
                                      } });
 
     lowButton.begin(LOW_BUTTON_PIN, INPUT_PULLUP);
+    lowButton.setLongClickTime(1000);
     lowButton.setClickHandler([this](Button2 &btn)
                               { this->turnOnLow(); });
 
@@ -27,6 +29,7 @@ void Switch::setup()
                                      } });
 
     offButton.begin(OFF_BUTTON_PIN, INPUT_PULLUP);
+    offButton.setLongClickTime(1000);
     offButton.setClickHandler([this](Button2 &btn)
                               { this->turnOff(); });
 }
