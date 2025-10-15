@@ -9,8 +9,7 @@ static char jsonStatusBuffer[250];
 DeviceConfig deviceConfig;
 
 DeviceState deviceState = {
-    .relayState = RELAY_OPEN
-};
+    .switchState = SWITCH_OFF};
 
 DeviceConfig *currentDeviceConfig()
 {
@@ -22,22 +21,32 @@ DeviceState *currentDeviceState()
     return &deviceState;
 }
 
-const char *currentDeviceStatusJson()
+const char *currentDeviceStateJson()
 {
-    StaticJsonDocument<250> jsonDoc;
-    jsonDoc["state"] = deviceState.relayState == RELAY_CLOSED ? "ON" : "OFF";
-    jsonDoc["status"] = deviceState.relayState;
+    JsonDocument jsonDoc;
+    jsonDoc["state"] = deviceState.switchState == SWITCH_ON ? "ON" : "OFF";
+    jsonDoc["status"] = deviceState.switchState;
     jsonDoc["chipId"] = ESP.getChipId();
-    jsonDoc["ipAddress"] = WiFi.localIP().toString();
+
+    char ipBuf[16];
+    IPAddress ip = WiFi.localIP();
+    snprintf(ipBuf, sizeof(ipBuf), "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+    jsonDoc["ipAddress"] = ipBuf;
+
     jsonDoc["rssi"] = WiFi.RSSI();
 
-    serializeJson(jsonDoc, jsonStatusBuffer, sizeof(jsonStatusBuffer));
+    size_t len = serializeJson(jsonDoc, jsonStatusBuffer, sizeof(jsonStatusBuffer));
+    if (len >= sizeof(jsonStatusBuffer))
+    {
+        jsonStatusBuffer[sizeof(jsonStatusBuffer) - 1] = '\0';
+    }
+
     return jsonStatusBuffer;
 }
 
-const char* currentDeviceConfigJson()
+const char *currentDeviceConfigJson()
 {
-    StaticJsonDocument<250> jsonDoc;
+    JsonDocument jsonDoc;
     jsonDoc["device"] = deviceConfig.deviceName;
     jsonDoc["room"] = deviceConfig.roomName;
     jsonDoc["location"] = deviceConfig.locationName;
@@ -46,6 +55,11 @@ const char* currentDeviceConfigJson()
     jsonDoc["wifiPassword"] = deviceConfig.wifiPassword;
     jsonDoc["disableLed"] = deviceConfig.disableLed;
 
-    serializeJson(jsonDoc, jsonStatusBuffer, sizeof(jsonStatusBuffer));
+    size_t len = serializeJson(jsonDoc, jsonStatusBuffer, sizeof(jsonStatusBuffer));
+    if (len >= sizeof(jsonStatusBuffer))
+    {
+        jsonStatusBuffer[sizeof(jsonStatusBuffer) - 1] = '\0';
+    }
+
     return jsonStatusBuffer;
 }

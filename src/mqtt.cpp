@@ -38,9 +38,23 @@ void mqttSetup()
   _mqClient.setCallback(mqttCallback);
   //  _mqClient.setKeepAlive(120);
 
-  sprintf(_commandTopic, "%s/%s/%s/command", deviceConfig->locationName, deviceConfig->roomName, deviceConfig->deviceName);
-  sprintf(_statusTopic, "%s/%s/%s/status", deviceConfig->locationName, deviceConfig->roomName, deviceConfig->deviceName);
-  sprintf(_lwtTopic, "%s/%s/%s/LWT", deviceConfig->locationName, deviceConfig->roomName, deviceConfig->deviceName);
+  size_t l = snprintf(_commandTopic, sizeof(_commandTopic), "%s/%s/%s/command", deviceConfig->locationName, deviceConfig->roomName, deviceConfig->deviceName);
+  if (l >= sizeof(_commandTopic))
+  {
+    _commandTopic[sizeof(_commandTopic) - 1] = '\0';
+  }
+
+  l = snprintf(_statusTopic, sizeof(_statusTopic), "%s/%s/%s/status", deviceConfig->locationName, deviceConfig->roomName, deviceConfig->deviceName);
+  if (l >= sizeof(_statusTopic))
+  {
+    _statusTopic[sizeof(_statusTopic) - 1] = '\0';
+  }
+
+  l = snprintf(_lwtTopic, sizeof(_lwtTopic), "%s/%s/%s/LWT", deviceConfig->locationName, deviceConfig->roomName, deviceConfig->deviceName);
+  if (l >= sizeof(_lwtTopic))
+  {
+    _lwtTopic[sizeof(_lwtTopic) - 1] = '\0';
+  }
 }
 
 void mqttLoop()
@@ -75,7 +89,12 @@ void mqttConnect()
   if (!_mqClient.connected() && _nextReconnectAttempt < millis())
   {
 
-    sprintf(_jsonStatusBuffer, CLIENT_ID, ESP.getChipId());
+    size_t l = snprintf(_jsonStatusBuffer, sizeof(_jsonStatusBuffer), CLIENT_ID, ESP.getChipId());
+    if (l >= sizeof(_jsonStatusBuffer))
+    {
+      _jsonStatusBuffer[sizeof(_jsonStatusBuffer) - 1] = '\0';
+    }
+
     if (_mqClient.connect(_jsonStatusBuffer, _lwtTopic, 0, true, "Offline"))
     {
       Serial.println("Connected to MQTT Server");
@@ -108,15 +127,15 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   DeviceState* currentState = currentDeviceState();
   if ((char)payload[0] == '0')
   {
-    currentState->relayState = RELAY_OPEN;
+    currentState->switchState = SWITCH_OFF;
   }
   else if ((char)payload[0] == '1')
   {
-    currentState->relayState = RELAY_CLOSED;
+    currentState->switchState = SWITCH_ON;
   }
   else if ((char)payload[0] == '2')
   {
-    currentState->relayState = currentState->relayState == RELAY_OPEN ? RELAY_CLOSED : RELAY_OPEN;
+    currentState->switchState = currentState->switchState == SWITCH_ON ? SWITCH_OFF : SWITCH_ON;
   }
 }
 

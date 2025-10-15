@@ -2,15 +2,14 @@
 #define Configuration_h
 
 #include <Arduino.h>
-#include "relay.h"
 
 #define CLIENT_ID "switch-%i"
 
-#define SONOFF_BASIC
+// #define SONOFF_BASIC
 // #define KMC_SMART_PLUG
 // #define SONOFF_DUAL_R2
 // #define KS602S_SWITCH
-// #define ESP8266_DEV
+#define ESP8266_DEV
 
 #ifdef SONOFF_BASIC
 #define RELAY_PIN 12

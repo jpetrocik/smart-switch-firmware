@@ -2,6 +2,7 @@
 #define DEVICE_H
 #include "configuration.h"
 #include <ArduinoJson.h>
+#include "switch.h"
 
 struct DeviceConfig
 {
@@ -18,7 +19,7 @@ struct DeviceConfig
 
 struct DeviceState
 {
-    RELAY_STATE relayState;
+    SWITCH_STATE switchState;
 };
 
 DeviceConfig *currentDeviceConfig();

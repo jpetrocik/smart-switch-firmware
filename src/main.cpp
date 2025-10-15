@@ -129,7 +129,7 @@ void setup()
   Serial.println(__DATE__ " " __TIME__);
 
   configLoad();
-  DeviceConfig* deviceConfig = currentDeviceConfig();
+  DeviceConfig *deviceConfig = currentDeviceConfig();
 
   Serial.println(deviceConfig->hostname);
 
@@ -140,7 +140,8 @@ void setup()
   mainSwitch.setStateChangedHandler(handleSwitchStateChange);
   mainSwitch.setupLongClickHandler(longPressButtonHandler, longReleaseButtonHandler);
 
-  sprintf(apSsid, CLIENT_ID, ESP.getChipId());
+  snprintf(apSsid, sizeof(apSsid), CLIENT_ID, ESP.getChipId());
+
   wifi_manager_setEventHandler(wifiEventHandler);
   wifi_manager_setup(deviceConfig->wifiSsid, deviceConfig->wifiPassword, apSsid);
 
@@ -168,15 +169,16 @@ void loop()
     ESP.restart();
   }
 
-  if (currentDeviceState()->relayState == RELAY_CLOSED)
+  // Sync up the relay state in case it was changed
+  if (currentDeviceState()->switchState == SWITCH_ON)
   {
-    digitalWrite(LED_PIN, LED_ON);
+    mainSwitch.turnOn();
   }
   else
   {
-    digitalWrite(LED_PIN, LED_OFF);
+    mainSwitch.turnOff();
   }
-  
+
   mainSwitch.loop();
 
   wifi_manager_loop();
@@ -307,7 +309,11 @@ void configLoad()
           deviceConfig->disableLed = false;
         }
 
-        sprintf(deviceConfig->hostname, "%s-%s", deviceConfig->roomName, deviceConfig->deviceName);
+        size_t l = snprintf(deviceConfig->hostname, sizeof(deviceConfig->hostname), "%s-%s", deviceConfig->roomName, deviceConfig->deviceName);
+        if (l >= sizeof(deviceConfig->hostname))
+        {
+          deviceConfig->hostname[sizeof(deviceConfig->hostname) - 1] = '\0';
+        }
 
         configFile.close();
       }

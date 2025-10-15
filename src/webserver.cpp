@@ -15,15 +15,13 @@ void webServerLoop()
 
 void handleTurnOff()
 {
-  DeviceState *currentState = currentDeviceState();
-  currentState->relayState = RELAY_OPEN;
+  currentDeviceState()->switchState = SWITCH_OFF;
   server.send(200);
 }
 
 void handleTurnOn()
 {
-  DeviceState *currentState = currentDeviceState();
-  currentState->relayState = RELAY_CLOSED;
+  currentDeviceState()->switchState = SWITCH_ON;
   server.send(200);
 }
 
@@ -39,7 +37,6 @@ void handleRestart()
   ESP.restart();
 }
 
-// TODO Should return deviceConfig
 void handleConfigureDevice()
 {
   server.send(200, "application/json", currentDeviceConfigJson());
