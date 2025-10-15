@@ -11,12 +11,11 @@
 #include "ota.h"
 #include "webserver.h"
 #include "switch.h"
+#include "device.h"
 
 Ticker ticker;
 
 Switch mainSwitch;
-
-DeviceConfig deviceConfig;
 
 char apSsid[sizeof(CLIENT_ID) + 10];
 
@@ -82,9 +81,9 @@ void longReleaseButtonHandler(Button2 &btn)
 void handleSwitchStateChange(SWITCH_STATE state)
 {
   sendCurrentStatus();
-  if (!deviceConfig.disableLed)
+  if (!currentDeviceConfig()->disableLed)
   {
-    digitalWrite(LED_PIN, state == RELAY_CLOSED ? LED_ON : LED_OFF);
+    digitalWrite(LED_PIN, state == SWITCH_ON ? LED_ON : LED_OFF);
   }
 }
 
@@ -103,7 +102,7 @@ void wifiEventHandler(WIFI_MANAGER_EVENTS event)
     stopTicker();
     digitalWrite(LED_PIN, LED_OFF);
 #ifdef MDNS_ENABLED
-    mdnsSetup(deviceConfig.hostname);
+    mdnsSetup(currentDeviceConfig()->hostname);
 #endif
     break;
   case STATION_DISCONNECTED:
@@ -112,6 +111,10 @@ void wifiEventHandler(WIFI_MANAGER_EVENTS event)
     break;
   case ACCESS_POINT_STARTING:
     Serial.println("Starting AP");
+    startTicker(.25);
+    break;
+  case STATION_AUTH_FAILED:
+    Serial.println("Authentication Failed");
     startTicker(.25);
     break;
   }
@@ -126,8 +129,9 @@ void setup()
   Serial.println(__DATE__ " " __TIME__);
 
   configLoad();
+  DeviceConfig* deviceConfig = currentDeviceConfig();
 
-  Serial.println(deviceConfig.hostname);
+  Serial.println(deviceConfig->hostname);
 
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LED_OFF);
@@ -138,30 +142,41 @@ void setup()
 
   sprintf(apSsid, CLIENT_ID, ESP.getChipId());
   wifi_manager_setEventHandler(wifiEventHandler);
-  wifi_manager_setup(deviceConfig.wifiSsid, deviceConfig.wifiPassword, apSsid);
+  wifi_manager_setup(deviceConfig->wifiSsid, deviceConfig->wifiPassword, apSsid);
 
 #ifdef OTA_ENABLED
-  otaSetup(deviceConfig.hostname);
+  otaSetup(deviceConfig->hostname);
 #endif
 
 #ifdef MQTT_ENABLED
-  mqttSetup(&deviceConfig, &mainSwitch);
+  mqttSetup();
 #endif
 
 #ifdef WEBSERVER_ENABLED
-  webServerSetup(&deviceConfig, &mainSwitch);
+  webServerSetup();
 #endif
 }
 
 void loop()
 {
-  if (deviceConfig.dirty)
+  DeviceConfig *deviceConfig = currentDeviceConfig();
+
+  if (deviceConfig->dirty)
   {
     configSave();
     delay(2000);
     ESP.restart();
   }
 
+  if (currentDeviceState()->relayState == RELAY_CLOSED)
+  {
+    digitalWrite(LED_PIN, LED_ON);
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LED_OFF);
+  }
+  
   mainSwitch.loop();
 
   wifi_manager_loop();
@@ -208,25 +223,12 @@ void tick()
 
 void configSave()
 {
-  JsonDocument jsonDoc;
-
-  jsonDoc["device"] = deviceConfig.deviceName;
-  jsonDoc["room"] = deviceConfig.roomName;
-  jsonDoc["location"] = deviceConfig.locationName;
-  jsonDoc["mqttHost"] = deviceConfig.mqttHost;
-  jsonDoc["wifiSsid"] = deviceConfig.wifiSsid;
-  jsonDoc["wifiPassword"] = deviceConfig.wifiPassword;
-  jsonDoc["disableLed"] = deviceConfig.disableLed;
-
-  sprintf(deviceConfig.hostname, "%s-%s", deviceConfig.roomName, deviceConfig.deviceName);
 
   File configFile = SPIFFS.open("/config.json", "w");
   if (configFile)
   {
     Serial.println("Saving config data....");
-    serializeJson(jsonDoc, Serial);
-    Serial.println();
-    serializeJson(jsonDoc, configFile);
+    configFile.write(currentDeviceConfigJson());
     configFile.close();
   }
 }
@@ -253,58 +255,61 @@ void configLoad()
         serializeJsonPretty(jsonDoc, Serial);
         Serial.println();
 
+        DeviceConfig *deviceConfig = currentDeviceConfig();
         if (((JsonVariant)jsonDoc["device"]).is<const char *>())
         {
-          strncpy(deviceConfig.deviceName, jsonDoc["device"], 20);
+          strncpy(deviceConfig->deviceName, jsonDoc["device"], 20);
         }
 
         if (((JsonVariant)jsonDoc["room"]).is<const char *>())
         {
-          strncpy(deviceConfig.roomName, jsonDoc["room"], 20);
+          strncpy(deviceConfig->roomName, jsonDoc["room"], 20);
         }
 
         if (((JsonVariant)jsonDoc["location"]).is<const char *>())
         {
-          strncpy(deviceConfig.locationName, jsonDoc["location"], 20);
+          strncpy(deviceConfig->locationName, jsonDoc["location"], 20);
         }
-
-        sprintf(deviceConfig.hostname, "%s-%s", deviceConfig.roomName, deviceConfig.deviceName);
 
         if (((JsonVariant)jsonDoc["mqttHost"]).is<const char *>())
         {
-          strncpy(deviceConfig.mqttHost, jsonDoc["mqttHost"], 50);
+          strncpy(deviceConfig->mqttHost, jsonDoc["mqttHost"], 50);
         }
         else
         {
-          deviceConfig.mqttHost[0] = 0;
+          deviceConfig->mqttHost[0] = 0;
         }
 
         if (((JsonVariant)jsonDoc["wifiSsid"]).is<const char *>())
         {
-          strncpy(deviceConfig.wifiSsid, jsonDoc["wifiSsid"], 25);
+          strncpy(deviceConfig->wifiSsid, jsonDoc["wifiSsid"], 25);
         }
         else
         {
-          deviceConfig.wifiSsid[0] = 0;
+          deviceConfig->wifiSsid[0] = 0;
         }
 
         if (((JsonVariant)jsonDoc["wifiPassword"]).is<const char *>())
         {
-          strncpy(deviceConfig.wifiPassword, jsonDoc["wifiPassword"], 25);
+          strncpy(deviceConfig->wifiPassword, jsonDoc["wifiPassword"], 25);
         }
         else
         {
-          deviceConfig.wifiPassword[0] = 0;
+          deviceConfig->wifiPassword[0] = 0;
         }
 
         if (((JsonVariant)jsonDoc["disableLed"]).is<bool>())
         {
-          deviceConfig.disableLed = jsonDoc["disableLed"];
+          deviceConfig->disableLed = jsonDoc["disableLed"];
         }
         else
         {
-          deviceConfig.disableLed = false;
+          deviceConfig->disableLed = false;
         }
+
+        sprintf(deviceConfig->hostname, "%s-%s", deviceConfig->roomName, deviceConfig->deviceName);
+
+        configFile.close();
       }
     }
   }

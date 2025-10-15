@@ -6,11 +6,11 @@
 
 #define CLIENT_ID "switch-%i"
 
-// #define SONOFF_BASIC
+#define SONOFF_BASIC
 // #define KMC_SMART_PLUG
 // #define SONOFF_DUAL_R2
 // #define KS602S_SWITCH
-#define ESP8266_DEV
+// #define ESP8266_DEV
 
 #ifdef SONOFF_BASIC
 #define RELAY_PIN 12
@@ -62,18 +62,5 @@
 #define WEBSERVER_ENABLED
 #define OTA_ENABLED
 #define MDNS_ENABLED
-
-struct DeviceConfig
-{
-  char deviceName[20] = "light";
-  char roomName[20] = "room";
-  char locationName[20] = "house";
-  char hostname[41] = "room-light";
-  char mqttHost[50];
-  char wifiSsid[25];
-  char wifiPassword[50];
-  bool disableLed = false;
-  bool dirty = false;
-};
 
 #endif

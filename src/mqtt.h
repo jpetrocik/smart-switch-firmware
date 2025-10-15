@@ -5,7 +5,7 @@
 #include <Arduino.h>
 #include "switch.h"
 
-void mqttSetup(DeviceConfig *deviceConfig, Switch *switch1);
+void mqttSetup();
 void mqttLoop();
 void mqttSendStatus();
 #endif
