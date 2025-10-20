@@ -8,24 +8,16 @@ static char jsonStatusBuffer[250];
 
 DeviceConfig deviceConfig;
 
-DeviceState deviceState = {
-    .switchState = SWITCH_OFF};
-
 DeviceConfig *currentDeviceConfig()
 {
     return &deviceConfig;
 }
 
-DeviceState *currentDeviceState()
-{
-    return &deviceState;
-}
-
 const char *currentDeviceStateJson()
 {
     JsonDocument jsonDoc;
-    jsonDoc["state"] = deviceState.switchState == SWITCH_ON ? "ON" : "OFF";
-    jsonDoc["status"] = deviceState.switchState;
+    jsonDoc["state"] = switchState() == SWITCH_ON ? "ON" : "OFF";
+    jsonDoc["status"] = (int)switchState();
     jsonDoc["chipId"] = ESP.getChipId();
 
     char ipBuf[16];

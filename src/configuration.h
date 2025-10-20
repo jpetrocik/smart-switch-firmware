@@ -43,7 +43,7 @@
 #endif
 
 #ifdef ESP8266_DEV
-#define RELAY_PIN 12
+#define RELAY_PIN 14
 #define LED_PIN 2
 #define BUTTON_PIN 0
 #define LED_INVERTED

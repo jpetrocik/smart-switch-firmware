@@ -15,13 +15,13 @@ void webServerLoop()
 
 void handleTurnOff()
 {
-  currentDeviceState()->switchState = SWITCH_OFF;
+  switchTurnOff();
   server.send(200);
 }
 
 void handleTurnOn()
 {
-  currentDeviceState()->switchState = SWITCH_ON;
+  switchTurnOn();
   server.send(200);
 }
 
@@ -34,7 +34,7 @@ void handleRestart()
 {
   server.send(200, "application/json", "{\"message\":\"Restarting\"}");
   delay(1000);
-  ESP.restart();
+  deviceRestart();
 }
 
 void handleConfigureDevice()

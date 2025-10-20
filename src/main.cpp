@@ -70,7 +70,7 @@ void longReleaseButtonHandler(Button2 &btn)
   }
   if (btn.getLongClickCount() >= 8)
   {
-    ESP.reset();
+    deviceRestart();
   }
   else if (btn.getLongClickCount() >= 4)
   {
@@ -169,15 +169,19 @@ void loop()
     ESP.restart();
   }
 
-  // Sync up the relay state in case it was changed
-  if (currentDeviceState()->switchState == SWITCH_ON)
-  {
-    mainSwitch.turnOn();
-  }
-  else
-  {
-    mainSwitch.turnOff();
-  }
+  // //TODO Can be directed change by the switch class when the button is pressed
+  // // but the state is not updated. Maybe a currentState and requestedState. Also
+  // // using the switch as the current state rather then maintaining a separate state
+  // // in the device state.  Maybe make device state dynamic. in 
+  // // Sync up the relay state in case it was changed
+  // if (currentDeviceState()->switchState == SWITCH_ON)
+  // {
+  //   mainSwitch.turnOn();
+  // }
+  // else
+  // {
+  //   mainSwitch.turnOff();
+  // }
 
   mainSwitch.loop();
 
@@ -319,4 +323,30 @@ void configLoad()
       }
     }
   }
+}
+
+void switchTurnOn()
+{
+  mainSwitch.turnOn();
+}
+
+void switchTurnOff()
+{
+  mainSwitch.turnOff();
+}
+
+void switchToggle()
+{
+  mainSwitch.toggle();
+}
+
+SWITCH_STATE switchState()
+{
+  return mainSwitch.state();
+}
+
+void deviceRestart()
+{
+  Serial.println("Restarting device...");
+  ESP.restart();
 }

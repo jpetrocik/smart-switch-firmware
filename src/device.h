@@ -17,14 +17,15 @@ struct DeviceConfig
     bool dirty = false;
 };
 
-struct DeviceState
-{
-    SWITCH_STATE switchState;
-};
-
 DeviceConfig *currentDeviceConfig();
 const char *currentDeviceConfigJson();
-
-DeviceState *currentDeviceState();
 const char * currentDeviceStateJson();
+
+//Device function to be implemented in main.cpp
+void switchTurnOn();
+void switchTurnOff();
+void switchToggle();
+SWITCH_STATE switchState();
+void deviceRestart();
+void deviceFactoryReset();
 #endif

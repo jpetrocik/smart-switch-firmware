@@ -124,18 +124,17 @@ void mqttConnect()
 
 void mqttCallback(char *topic, byte *payload, unsigned int length)
 {
-  DeviceState* currentState = currentDeviceState();
   if ((char)payload[0] == '0')
   {
-    currentState->switchState = SWITCH_OFF;
+    switchTurnOff();
   }
   else if ((char)payload[0] == '1')
   {
-    currentState->switchState = SWITCH_ON;
+    switchTurnOn();
   }
   else if ((char)payload[0] == '2')
   {
-    currentState->switchState = currentState->switchState == SWITCH_ON ? SWITCH_OFF : SWITCH_ON;
+    switchToggle();
   }
 }
 
