@@ -68,6 +68,7 @@
 #define OFF_BUTTON_PIN 3
 #define LED_PIN 0
 #define LED_INVERTED
+#define HARDWARE_MODEL "SANA_SW02_03_v1"
 #endif
 
 #ifdef SANA_SW02_03_v2
@@ -79,6 +80,7 @@
 #define LOW_LED 14
 #define OFF_BUTTON_PIN 3
 #define LED_PIN 16
+#define HARDWARE_MODEL "SANA_SW02_03_v2"
 #endif
 
 #ifdef ESP8266_DEV
