@@ -134,7 +134,7 @@ void mqttSendStatus()
 
     sprintf(_jsonStatusBuffer, "{\"state\":\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
             currentRelayState == SWITCH_OFF ? "OFF" : currentRelayState == SWITCH_LOW ? "LOW" : "HIGH",
-            (int)currentRelayState,
+            currentRelayState == SWITCH_OFF ? 0 : 1, //only distinguish between off and on for status
             ESP.getChipId(),
             WiFi.localIP().toString().c_str(),
             WiFi.RSSI());
