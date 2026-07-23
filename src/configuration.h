@@ -18,6 +18,7 @@
 #define LED_PIN 13
 #define BUTTON_PIN 0
 #define LED_INVERTED
+#define HARDWARE_MODEL "SONOFF_BASIC"
 #endif
 
 #ifdef KMC_SMART_PLUG
@@ -25,6 +26,7 @@
 #define LED_PIN 13
 #define BUTTON_PIN 0
 #define LED_INVERTED
+#define HARDWARE_MODEL "KMC_SMART_PLUG"
 #endif
 
 #ifdef SONOFF_DUAL_R2
@@ -33,6 +35,7 @@
 #define BUTTON_PIN 0
 #define LED_INVERTED
 #define RELAY_INVERTED
+#define HARDWARE_MODEL "SONOFF_DUAL_R2"
 #endif
 
 /**
@@ -42,6 +45,7 @@
 #define RELAY_PIN 12
 #define LED_PIN 13
 #define BUTTON_PIN 0
+#define HARDWARE_MODEL "KS602S_SWITCH"
 #endif
 
 #ifdef GARAGE
@@ -51,6 +55,7 @@
 #define BUTTON_PIN 0
 #define RELAY_INVERTED
 #define LED_INVERTED
+#define HARDWARE_MODEL "GARAGE_V1_2"
 #endif
 
 #ifdef ESP8266_DEV
@@ -58,6 +63,7 @@
 #define LED_PIN 2
 #define BUTTON_PIN 0
 #define LED_INVERTED
+#define HARDWARE_MODEL "ESP8266_DEV"
 #endif
 
 #ifdef LED_INVERTED

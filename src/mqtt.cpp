@@ -17,7 +17,7 @@ unsigned long _nextReconnectAttempt = 0;
 char _commandTopic[100];
 char _statusTopic[100];
 char _lwtTopic[100];
-char _jsonStatusBuffer[140];
+char _jsonStatusBuffer[180];
 DeviceConfig *_mqttDeviceConfig;
 unsigned long lastStatePublishCounter = 0;
 Switch *_mqttSwitch;
@@ -128,12 +128,13 @@ void mqttSendStatus()
   {
     DOOR_STATE currentDoorState = (DOOR_STATE)_mqttSwitch->state();
 
-    sprintf(_jsonStatusBuffer, "{\"state\":\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\"}",
+    sprintf(_jsonStatusBuffer, "{\"state\":\"%s\", \"status\":%i, \"chipId\":%i, \"ipAddress\":\"%s\", \"rssi\":\"%i dBm\", \"hardware\":\"%s\"}",
             currentDoorState == DOOR_CLOSED ? "CLOSED" : "OPEN",
             (int)currentDoorState,
             ESP.getChipId(),
             WiFi.localIP().toString().c_str(),
-            WiFi.RSSI());
+            WiFi.RSSI(),
+            HARDWARE_MODEL);
     _mqClient.publish(_statusTopic, _jsonStatusBuffer, true);
   }
 }
