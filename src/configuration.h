@@ -47,41 +47,6 @@
 #define HARDWARE_MODEL "KS602S_SWITCH"
 #endif
 
-/**
- * SW02-03 has two versions, the v1 with a esp8266 base Tuya
- * chip and the v2 with a non-esp base chip. v1 just needs to be flashed, 
- * v2 needs the Tuya chip removed and replaced with an esp8266 chip. 
- * 
- * The v1 version does not have pins for led controls.  The leds are tied
- * to the relay circuit and turns on/off based on the relay state.
- * 
- * The v2 version has pins for led control. The wifi pin is tied to ADC pin
- * and hence can't be used for output to contorl the LED.  See hack here to 
- * control the WiFi led, https://github.com/r2db/Youngzuth_SW02-03
- */
-#ifdef SANA_SW02_03_v1
-#define HIGH_BUTTON_PIN 12
-#define HIGH_RELY_PIN 13
-#define LOW_BUTTON_PIN 5
-#define LOW_RELY_PIN 15
-#define OFF_BUTTON_PIN 3
-#define LED_PIN 0
-#define LED_INVERTED
-#define HARDWARE_MODEL "SANA_SW02_03_v1"
-#endif
-
-#ifdef SANA_SW02_03_v2
-#define HIGH_BUTTON_PIN 12
-#define HIGH_RELY_PIN 13
-#define HIGH_LED 0
-#define LOW_BUTTON_PIN 5
-#define LOW_RELY_PIN 15
-#define LOW_LED 14
-#define OFF_BUTTON_PIN 3
-#define LED_PIN 16
-#define HARDWARE_MODEL "SANA_SW02_03_v2"
-#endif
-
 #ifdef ESP8266_DEV
 #define RELAY_PIN 12
 #define LED_PIN 2
